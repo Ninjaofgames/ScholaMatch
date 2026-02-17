@@ -1,0 +1,141 @@
+/* Admin login - dark theme, professional, minimal */
+.admin-login-page {
+  min-height: 100vh;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.admin-login-card h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 0.25rem;
+}
+
+.admin-login-subtitle {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-login-card .input-field {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.admin-login-card .input-field::placeholder {
+  color: #64748b;
+}
+
+.admin-login-card .input-field:focus {
+  border-color: #6366f1;
+}
+
+.admin-login-card .input-label {
+  color: #e2e8f0;
+}
+
+.admin-login-card .alert-error {
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.admin-login-card .btn-primary {
+  background: #4f46e5;
+}
+
+.admin-login-card .btn-primary:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.admin-forgot-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.admin-forgot-link a {
+  color: #818cf8;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.admin-forgot-link a:hover {
+  text-decoration: underline;
+}
+
+.admin-login-card .verify-code-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* Password input with toggle - admin */
+.admin-login-card .input-with-icon .input-field {
+  padding-right: 46px;
+}
+
+.admin-login-card .input-icon-btn {
+  color: #94a3b8;
+}
+
+.admin-login-card .input-icon-btn:hover {
+  color: #e2e8f0;
+}
+
+/* Admin dashboard dark theme */
+.admin-dashboard {
+  background: #0f172a;
+}
+
+.admin-dashboard .dashboard-header,
+.admin-dashboard .stat-card,
+.admin-dashboard .section-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.admin-dashboard h1,
+.admin-dashboard h2,
+.admin-dashboard h3 {
+  color: #f8fafc;
+}
+
+.admin-dashboard .user-badge {
+  color: #94a3b8;
+}
+
+.admin-dashboard .stat-value {
+  color: #818cf8;
+}
+
+.admin-dashboard .data-table th,
+.admin-dashboard .data-table td {
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.admin-dashboard .data-table th {
+  color: #94a3b8;
+}
+
+.admin-loading {
+  background: #0f172a;
+}
+
+.admin-loading p {
+  color: #94a3b8;
+}
