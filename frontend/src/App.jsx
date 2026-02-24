@@ -4,7 +4,7 @@ import Model from './pages/Model'
 import Home from './pages/Home'
 import SchoolManagement from './pages/schoolmanage'
 import Profile from './pages/profile'
-import footerComp from './components/footer'
+import FooterComp from './components/footer'
 
 function App() {
   return(
@@ -19,7 +19,7 @@ function App() {
             <Route path='/profile' element={<Profile />}/> {/* To add profile id or sth */}
           </Routes>
         </main>
-        <footerComp />
+        <FooterComp />
       </div>
     </BrowserRouter>
   );
