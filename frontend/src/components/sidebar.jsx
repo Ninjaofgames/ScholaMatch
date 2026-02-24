@@ -7,7 +7,7 @@ const navItems = [
         id: "home",
         path: "/",
         icon:(
-            <i class="fa-solid fa-house"></i>
+            <i className="fa-solid fa-house"></i>
         ),
         label: "Home",
     },
@@ -15,7 +15,7 @@ const navItems = [
         id: "manage",
         path: "/schoolM",
         icon:(
-            <i class="fa-solid fa-graduation-cap"></i>
+            <i className="fa-solid fa-graduation-cap"></i>
         ),
         label: "Manage",
     },
@@ -23,7 +23,7 @@ const navItems = [
         id: "model",
         path: "/modelTrain",
         icon:(
-            <i class="fa-solid fa-microchip"></i>
+            <i className="fa-solid fa-microchip"></i>
         ),
         label: "Model",
     },
@@ -31,7 +31,7 @@ const navItems = [
         id: "account",
         path: "/profile",
         icon:(
-            <i class="fa-solid fa-user"></i>
+            <i className="fa-solid fa-user"></i>
         ),
         label: "Account",
     },
@@ -67,7 +67,7 @@ export default function SideBar(){
     return(
         <div className="sidebar">
             <div className="logo">
-                <img src="./public/logo.jpeg" />
+                <img src="/logo.jpeg" alt="logo" />
             </div>
             <nav className="sidebar__nav">
                 {navItems.map((item) => (
@@ -75,7 +75,6 @@ export default function SideBar(){
                         key={item.id}
                         item={item}
                         isActive={location.pathname === item.path}
-                        onClick={() => setActive(item.path)}
                     />
                 ))}
             </nav>

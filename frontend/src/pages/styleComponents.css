@@ -23,6 +23,7 @@ body{
     width: 80%;
     padding: 10px 40px;
     border-radius: 20px;
+    border: dashed #000000;
 }
 
 .dropArea .otherDrop{
