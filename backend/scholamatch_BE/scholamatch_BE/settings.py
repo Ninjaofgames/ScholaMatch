@@ -125,7 +125,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 #Rest API: Allow React dev server
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 # For production phase
