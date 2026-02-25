@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'scholamatch_BE.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'scholamatch',
+        'USER': 'badr',
+        'PASSWORD': 'B@dr2620*!',
+        'HOST': '192.168.56.110',
+        'PORT': '5432',
     }
 }
 
