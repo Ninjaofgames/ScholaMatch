@@ -11,12 +11,8 @@ export default function Model(){
             const formData = new FormData();
             formData.append('file', f);
 
-            const response = await fetch('http://127.0.0.1:8000/upload/', {
-                method: 'POST',
-                body: formData,
-            });
-            const data = await response.json();
-            console.log(data);
+            const response = await axios.post('http://127.0.0.1:8000/upload/', formData);
+            console.log(response.data);
         }
     }
     const handleDrop = (e) => {
@@ -25,9 +21,10 @@ export default function Model(){
     }
     const [items, setItems] = useState([]);
     useEffect(() => {
-        axios.get("http://localhost:8000/api/items/")
-        .then(res => setItems(res.data.items));
-    }, [])
+        axios.get("http://127.0.0.1:8000/api/test/")
+        .then(res => console.log(res.data))
+        .catch(err => console.log("Connection failed!", err));
+    }, []);
     return(
         <div className="modelMain">
             <h1 className="title">Model training</h1>
@@ -41,9 +38,6 @@ export default function Model(){
                         <p>{file ? `✓ ${file.name}` : "Drop your file here, or click to browse"}</p>
                     </div>
                 </div>
-                <ul>
-                    {items.map(item => <li key={item}>{item}</li>)}
-                </ul>
             </div>
         </div>
     );
