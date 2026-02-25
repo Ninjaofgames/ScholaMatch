@@ -28,7 +28,7 @@ export default function VerifyCode() {
       const res = await userAuthService.verifyEmail(email, code);
       if (res.success) {
         setVerifiedUser(res.token, res.user);
-        navigate('/dashboard');
+        navigate('/preferences');
       }
     } catch (err) {
       const errData = err.response?.data?.errors || err.response?.data;

@@ -13,6 +13,7 @@ import VerifyCode from './pages/user/VerifyCode';
 import ForgotPassword from './pages/user/ForgotPassword';
 import ResetPassword from './pages/user/ResetPassword';
 import UserDashboard from './pages/user/UserDashboard';
+import Preferences from './pages/user/Preferences';
 import Profile from './pages/user/Profile';
 import Register from './pages/Register';
 import './styles/auth.css';
@@ -36,6 +37,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
+            <Route path="/preferences" element={<UserRoute><Preferences /></UserRoute>} />
             <Route path="/profile" element={<UserRoute><Profile /></UserRoute>} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
