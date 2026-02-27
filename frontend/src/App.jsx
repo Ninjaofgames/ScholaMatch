@@ -19,7 +19,6 @@ function App() {
             <Route path='/profile' element={<Profile />}/> {/* To add profile id or sth */}
           </Routes>
         </main>
-        <FooterComp />
       </div>
     </BrowserRouter>
   );

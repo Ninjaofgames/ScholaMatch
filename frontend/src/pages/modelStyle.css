@@ -14,6 +14,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .dropArea{
@@ -23,7 +24,8 @@ body{
     width: 80%;
     padding: 10px 40px;
     border-radius: 20px;
-    border: dashed #000000;
+    border: 2px dashed rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
 }
 
 .dropArea .otherDrop{
@@ -37,7 +39,7 @@ body{
     font-size: 40px;
 }
 
-.dropArea h3{
+h3.h3{
     font-size: 25px;
 }
 
@@ -53,4 +55,28 @@ body{
 
 .uploadBtn:hover{
     opacity: 0.9;
+}
+
+.modelMain{
+    margin-left: 62px;
+}
+
+.subtitle{
+    font-weight: 500;
+    font-size: 22px;
+    text-align: left;
+    align-self: stretch;
+    color: #4BB84B;
+    margin-left: 50px;
+}
+
+.manAdd{
+    display: block;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    padding: 10px 40px;
+    border-radius: 20px;
+    border: none;
+    background-color: rgba(95, 195, 220, 0.5);
+    color: #000000;
 }

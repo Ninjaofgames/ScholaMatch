@@ -1,5 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .models import Comment
+from .serializers import CommentSerializer
 import csv
 import io
 
@@ -24,3 +26,17 @@ def upload_csv(request):
         "filename": file.name,
         "rows": len(rows)
     })
+
+@api_view(['POST'])
+def submit_comment(request):
+    serializer = CommentSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Comment saved!"}, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+def get_comments(request):
+    comments = Comment.objects.all()
+    serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)

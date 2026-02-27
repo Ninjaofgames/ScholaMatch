@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import './styleComponents.css';
+import './modelStyle.css';
 import { data } from "react-router-dom";
 import axios from "axios";
+import FooterComp from "../components/footer";
 
 export default function Model(){
     const [file, setFile] = useState(null);
@@ -30,7 +31,7 @@ export default function Model(){
             <h1 className="title">Model training</h1>
             <div className="center">
                 <div className="dropArea" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
-                    <h3>Add a csv file</h3>
+                    <h3 className="h3">Add a csv file</h3>
                     <div className="otherDrop">
                         <i className="fa-solid fa-download"></i><br />
                         <button className="uploadBtn" onClick={() => document.getElementById('csvInput').click()}>UPLOAD</button>
@@ -38,7 +39,14 @@ export default function Model(){
                         <p>{file ? `✓ ${file.name}` : "Drop your file here, or click to browse"}</p>
                     </div>
                 </div>
+                <h2 className="subtitle">Add manually a comment</h2>
+                <div className="manAdd">
+                    <h3 className="h3">Comment section</h3>
+                    sdf
+                </div>
             </div>
+            
+            <FooterComp />
         </div>
     );
 }

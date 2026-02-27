@@ -1,13 +1,14 @@
 .sidebar{
     width: 62px;
     min-height: 100vh;
-    background-color: #5FC3DC;
+    background-image: linear-gradient(to bottom, #5FC3DC, #4BB84B);
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 16px;
     padding-bottom: 24px;
     font-family: sans-serif;
+    position: fixed;
 }
 
 .logo{
@@ -47,7 +48,7 @@
     height: 56px;
     cursor: pointer;
     transition: all 0.5s;
-    color: #4BB84B;
+    color: #ffffff;
     font-size: 27.5px;
 }
 
@@ -81,9 +82,10 @@
 .nav-item__tooltip{
     position: absolute;
     left: 66px;
-    background: #5FC3DC;
+    background: #4BB84B;
     color: #E8EFF6;
     font-size: 12px;
+    font-family: "Google Sans", sans-serif;
     padding: 4px 10px;
     border-radius: 6px;
     white-space: nowrap;
@@ -106,6 +108,7 @@
     height: 46px;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 50px;
     transition: color 0.2s ease;
 }
 
@@ -117,4 +120,10 @@
     font-size: 20px;
     font-weight: 500;
     text-align: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: #4BB84B;
+    margin-left: 62px;
 }

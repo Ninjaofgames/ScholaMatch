@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',   #Rest API here
     'corsheaders',  #Rest API here
+    'Admin',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,9 @@ DATABASES = {
         'PASSWORD': 'B@dr2620*!',
         'HOST': '192.168.56.110',
         'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=analytics,auth,school,test'
+        },
     }
 }
 
