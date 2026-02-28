@@ -29,11 +29,14 @@ def upload_csv(request):
 
 @api_view(['POST'])
 def submit_comment(request):
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "Comment saved!"}, status=201)
-    return Response(serializer.errors, status=400)
+    try:
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Comment saved!"}, status=201)
+        return Response(serializer.errors, status=400)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
 def get_comments(request):

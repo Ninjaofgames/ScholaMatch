@@ -5,6 +5,30 @@ import axios from "axios";
 import FooterComp from "../components/footer";
 
 export default function Model(){
+    //Form section
+    const [comment, setComment] = useState("");
+    const [sentiment_label, setLabel] = useState("postive");
+    const [sentiment_score, setSentimentScore] = useState(0);
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("http://127.0.0.1:8000/api/comments/", {
+                comment_content: comment,
+                sentiment_label: sentiment_label,
+                sentiment_score: 0,
+                data_source: "manual"
+            });
+            setComment("");
+            setLabel("postive");
+            setSentimentScore(0);
+            alert("Comment submitted successfully!");
+        } catch (error) {
+            console.log("Error details:", error.response?.data);
+            alert("Error submitting comment: " + (error.response?.data?.error || error.response?.data?.comment_content || "Unknown error"));
+        }
+    }
+    //Import section
     const [file, setFile] = useState(null);
     const handleFile = async (f) => {
         if (f && f.name.endsWith('.csv')) {
@@ -28,8 +52,9 @@ export default function Model(){
     }, []);
     return(
         <div className="modelMain">
-            <h1 className="title">Model training</h1>
+            <h1 className="title">Add comments</h1>
             <div className="center">
+                <h2 className="modelName">ScholaSense</h2>
                 <div className="dropArea" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                     <h3 className="h3">Add a csv file</h3>
                     <div className="otherDrop">
@@ -42,11 +67,32 @@ export default function Model(){
                 <h2 className="subtitle">Add manually a comment</h2>
                 <div className="manAdd">
                     <h3 className="h3">Comment section</h3>
-                    sdf
+                    <form onSubmit={handleSubmit}>
+                        <label>Comment</label>
+                        <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Put your comment here" required></textarea>
+                        
+                        <div className="formGroup">
+                            <label>Sentiment</label>
+                            <div className="radioGroup">
+                                <label>
+                                    <input type="radio" value="postive" checked={sentiment_label === "postive"} onChange={(e) => setLabel(e.target.value)} />
+                                    <span className="radioLabel positive">Positive</span>
+                                </label>
+                                <label>
+                                    <input type="radio" value="neutral" checked={sentiment_label === "neutral"} onChange={(e) => setLabel(e.target.value)} />
+                                    <span className="radioLabel neutral">Neutral</span>
+                                </label>
+                                <label>
+                                    <input type="radio" value="negative" checked={sentiment_label === "negative"} onChange={(e) => setLabel(e.target.value)} />
+                                    <span className="radioLabel negative">Negative</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit">Add comments</button>
+                    </form>
                 </div>
             </div>
-            
-            <FooterComp />
         </div>
     );
 }

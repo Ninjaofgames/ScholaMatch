@@ -17,7 +17,7 @@ const navItems = [
         icon:(
             <i className="fa-solid fa-graduation-cap"></i>
         ),
-        label: "Manage",
+        label: "Schools",
     },
     {
         id: "model",
@@ -25,7 +25,7 @@ const navItems = [
         icon:(
             <i className="fa-solid fa-microchip"></i>
         ),
-        label: "Model",
+        label: "Comments",
     },
     {
         id: "account",
