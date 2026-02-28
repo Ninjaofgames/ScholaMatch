@@ -54,7 +54,7 @@ export default function Model(){
         <div className="modelMain">
             <h1 className="title">Add comments</h1>
             <div className="center">
-                <h2 className="modelName">ScholaSense</h2>
+                <h2 className="modelName">ScholaSense®</h2>
                 <div className="dropArea" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                     <h3 className="h3">Add a csv file</h3>
                     <div className="otherDrop">

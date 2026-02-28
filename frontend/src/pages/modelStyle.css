@@ -78,7 +78,7 @@ h3.h3{
     border-radius: 20px;
     border: none;
     background-color: rgba(95, 195, 220, 0.5);
-    color: #000000;
+    color: #E8EFF6;
 }
 
 .manAdd textarea{
@@ -87,7 +87,7 @@ h3.h3{
     border: 2px solid #4BB84B;
     border-radius: 10px;
     background-color: rgba(232, 239, 246, 0.9);
-    color: #000000;
+    color: #E8EFF6;
     font-size: 16px;
     font-family: inherit;
     resize: vertical;
@@ -102,7 +102,7 @@ h3.h3{
 }
 
 .manAdd textarea::placeholder{
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .manAdd button{
@@ -132,7 +132,7 @@ h3.h3{
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #000000;
+    color: #E8EFF6;
 }
 
 .formGroup input[type="text"]{
@@ -141,7 +141,7 @@ h3.h3{
     border: 2px solid #4BB84B;
     border-radius: 8px;
     background-color: rgba(232, 239, 246, 0.9);
-    color: #000000;
+    color: #E8EFF6;
     font-size: 16px;
     font-family: inherit;
     transition: all 0.3s ease;
@@ -156,7 +156,7 @@ h3.h3{
 }
 
 .formGroup input[type="text"]::placeholder{
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .radioGroup{
@@ -186,7 +186,7 @@ h3.h3{
     padding: 0;
     border-radius: 0;
     transition: all 0.3s ease;
-    color: #000000;
+    color: #E8EFF6;
     font-weight: 500;
 }
 
@@ -203,7 +203,7 @@ h3.h3{
 
 .manAdd form textarea{
     background-color: rgba(0, 0, 0, 0);
-    color: #000000;
+    color: #E8EFF6;
     border-radius: 10px;
     border: #000000 2px solid;
     padding: 10px;

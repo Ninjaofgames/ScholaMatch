@@ -11,7 +11,7 @@ function App() {
   return(
       <BrowserRouter>
         <VantaBg />
-        <div style={{display: "flex"}}>
+        <div style={{display: "flex", zIndex: 1, position: "relative"}}>
           <SideBar />
           <main style={{flex: 1, marginLeft: "60px"}}>
             <Routes>

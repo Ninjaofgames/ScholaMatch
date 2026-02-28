@@ -1,34 +1,54 @@
-import { useEffect, useRef } from "react";
-import * as THREE from 'three';
-import NET from 'vanta/dist/vanta.net.min';
+import { useEffect, useState } from "react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
 
 export function VantaBg() {
-    const vantaEffect = useRef(null);
+    const [init, setInit] = useState(false);
 
     useEffect(() => {
-        window.THREE = THREE;
-
-        if (!vantaEffect.current) {
-            vantaEffect.current = NET({
-                el: document.body,  // ← attach to body directly
-                THREE: THREE,
-                mouseControls: true,
-                touchControls: true,
-                color: 0x5FC3DC,
-                backgroundColor: 0x0f1923,
-                points: 14.00,
-                maxDistance: 22.00,
-                spacing: 18.00,
-                showDots: true,
-            });
-        }
-        return () => {
-            if (vantaEffect.current) {
-                vantaEffect.current.destroy();
-                vantaEffect.current = null;
-            }
-        };
+        initParticlesEngine(async (engine) => {
+            await loadSlim(engine);
+        }).then(() => setInit(true));
     }, []);
 
-    return null;  // ← no div needed
+    return init ? (
+        <Particles
+            id="tsparticles"
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 0,
+            }}
+            options={{
+                background: {
+                    color: { value: "#0f1923" },
+                },
+                particles: {
+                    number: { value: 80 },
+                    color: { value: "#5FC3DC" },
+                    links: {
+                        enable: true,
+                        color: "#5FC3DC",
+                        distance: 150,
+                        opacity: 0.4,
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1.5,
+                    },
+                    opacity: { value: 0.5 },
+                    size: { value: 3 },
+                },
+                interactivity: {
+                    events: {
+                        onHover: { enable: true, mode: "repulse" },
+                        onClick: { enable: true, mode: "push" },
+                    },
+                },
+            }}
+        />
+    ) : null;
 }
