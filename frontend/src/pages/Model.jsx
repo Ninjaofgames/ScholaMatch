@@ -16,7 +16,7 @@ export default function Model(){
             const response = await axios.post("http://127.0.0.1:8000/api/comments/", {
                 comment_content: comment,
                 sentiment_label: sentiment_label,
-                sentiment_score: 0,
+                sentiment_score: sentiment_score,
                 data_source: "manual"
             });
             setComment("");
@@ -88,8 +88,8 @@ export default function Model(){
                                 </label>
                             </div>
                         </div>
-
-                        <button type="submit">Add comments</button>
+                        <label>Sentiment Score</label>
+                        <input type="number" onChange={(e) => setSentimentScore(e.target.value)} placeholder="Formula: Score= (NPos * 1) + (NNeu * 0) + (NNeg * (-1))" step={"any"} required/>
                     </form>
                 </div>
             </div>

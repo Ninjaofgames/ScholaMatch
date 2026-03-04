@@ -102,7 +102,7 @@ class Choice(models.Model):
 class Comment(models.Model):
     id_comment = models.AutoField(primary_key=True)
     data_source = models.CharField(max_length=255, blank=True, null=True)
-    comment_date = models.DateTimeField(blank=True, null=True)
+    comment_date = models.DateTimeField(auto_now_add=True)
     comment_content = models.TextField()
     sentiment_score = models.FloatField(blank=True, null=True)
     sentiment_label = models.TextField(blank=True, null=True)  # This field type is a guess.   
