@@ -19,10 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from Admin import views as admin_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
     path('api/preferences/', include('preferences.urls')),
+    path('api/test/', admin_views.test_connection),
+    path('upload/', admin_views.upload_csv),
+    path('admin-api/', include('Admin.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

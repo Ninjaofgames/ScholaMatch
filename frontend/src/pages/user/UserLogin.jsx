@@ -14,7 +14,7 @@ const UserLogin = () => {
   const [serverError, setServerError] = useState('');
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/dashboard');
+    if (isAuthenticated) navigate('/');
   }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
@@ -40,7 +40,7 @@ const UserLogin = () => {
     setServerError('');
     try {
       const res = await login(formData.email, formData.password);
-      if (res.success) navigate('/dashboard');
+      if (res.success) navigate('/');
     } catch (err) {
       const errData = err.response?.data?.errors || err.response?.data;
       if (typeof errData === 'object') {

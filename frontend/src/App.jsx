@@ -15,10 +15,20 @@ import ResetPassword from './pages/user/ResetPassword';
 import UserDashboard from './pages/user/UserDashboard';
 import Preferences from './pages/user/Preferences';
 import Profile from './pages/user/Profile';
+import PublicSchools from './pages/user/PublicSchools';
 import Register from './pages/Register';
+
+// Admin Module new imports
+import AdminLayout from './admin_module/AdminLayout';
+import Home from './admin_module/pages/Home';
+import SchoolManagement from './admin_module/pages/schoolmanage';
+import Model from './admin_module/pages/Model';
+import AdminProfile from './admin_module/pages/profile';
+
 import './styles/auth.css';
 import './styles/admin.css';
 import './styles/global.css';
+import './styles/publicSchools.css';
 
 function App() {
   return (
@@ -29,8 +39,14 @@ function App() {
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
             <Route path="/admin/reset-password" element={<AdminResetPassword />} />
-            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/activity-logs" element={<AdminRoute><UserActivityLogs /></AdminRoute>} />
+            
+            <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route path="/admin/dashboard" element={<Home />} />
+              <Route path="/admin/schoolM" element={<SchoolManagement />} />
+              <Route path="/admin/modelTrain" element={<Model />} />
+              <Route path="/admin/profile" element={<AdminProfile />} />
+              <Route path="/admin/activity-logs" element={<UserActivityLogs />} />
+            </Route>
             <Route path="/login" element={<UserLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify" element={<VerifyCode />} />
@@ -39,8 +55,9 @@ function App() {
             <Route path="/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
             <Route path="/preferences" element={<UserRoute><Preferences /></UserRoute>} />
             <Route path="/profile" element={<UserRoute><Profile /></UserRoute>} />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/schools" element={<UserRoute><PublicSchools /></UserRoute>} />
+            <Route path="/" element={<UserRoute><PublicSchools /></UserRoute>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>

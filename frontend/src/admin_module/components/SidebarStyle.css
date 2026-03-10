@@ -1,0 +1,155 @@
+.sidebar {
+    width: 62px;
+    min-height: 100vh;
+    /* Clean, deep futuristic glassy backdrop */
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16px;
+    padding-bottom: 24px;
+    font-family: "Outfit", "Inter", sans-serif;
+    position: fixed;
+    z-index: 1000;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 120px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-muted);
+    font-size: 20px;
+    background: transparent;
+}
+
+.nav-item:hover {
+    color: var(--accent-blue);
+    transform: translateY(-2px);
+    background: var(--radial-1);
+    box-shadow: 0 4px 12px var(--radial-1);
+}
+
+.nav-item--active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    box-shadow: 0 4px 16px var(--radial-2);
+}
+
+.nav-item--active:hover {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+}
+
+.nav-item:active {
+    transform: scale(0.95);
+}
+
+.nav-item__bar {
+    position: absolute;
+    left: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    border-radius: 0 4px 4px 0;
+    background: var(--accent-blue);
+    box-shadow: 0 0 12px var(--radial-1);
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item--active .nav-item__bar {
+    height: 24px;
+}
+
+.nav-item__tooltip {
+    position: absolute;
+    left: 60px;
+    background: var(--bg-main);
+    backdrop-filter: blur(8px);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 4px 16px var(--shadow-glass);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: tooltipFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes tooltipFadeIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.sidebar__logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.sidebar__logout:hover {
+    color: #ef4444; /* Keep delete color static typically, or use danger vars */
+    background: var(--danger-bg);
+    box-shadow: 0 4px 12px var(--danger-border);
+    transform: translateY(-2px);
+}

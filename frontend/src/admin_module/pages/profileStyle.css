@@ -1,0 +1,87 @@
+.profileMain{
+    margin-left: 62px;
+}
+
+.avatarSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--radial-1);
+    border: 2px solid var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: var(--accent-blue);
+    box-shadow: 0 4px 16px var(--shadow-glass);
+}
+
+.avatarWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+}
+
+.initInfo{
+    margin-left: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px; /* Fixed spacing */
+}
+
+.username {
+    margin: 0;
+    font-size: 32px;
+}
+
+.admin{
+    font-weight: 500;
+    font-size: 17.5px;
+    margin: 0; /* REMOVED NEGATIVE MARGIN OVERLAP */
+    color: var(--text-secondary);
+}
+
+.manAdd{
+    margin-bottom: 30px;
+}
+
+.pinfo{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5%;
+}
+
+.pinfo [type="text"], .pinfo input[type="number"]{
+    width: 500px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-input);
+    border-radius: 12px;
+    background-color: var(--bg-input);
+    color: var(--text-muted);
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.pinfo label{
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+

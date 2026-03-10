@@ -11,7 +11,7 @@ const Register = () => {
   const { register, isAuthenticated } = useUserAuth();
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/dashboard');
+    if (isAuthenticated) navigate('/');
   }, [isAuthenticated, navigate]);
 
   const [formData, setFormData] = useState({

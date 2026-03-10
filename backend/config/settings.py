@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'accounts',
     'preferences',
+    'Admin',
+    'ML',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +74,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
-        'OPTIONS': {'connect_timeout': 10},
+        'OPTIONS': {
+            'connect_timeout': 10,
+            'options': '-c search_path=public,analytics,school,test,auth'
+        },
     }
 }
 

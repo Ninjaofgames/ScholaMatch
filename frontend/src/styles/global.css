@@ -7,19 +7,42 @@
 }
 
 :root {
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
+  /* LIGHT MODE (Default User Side) — ScholaMatch brand colors */
+  --color-primary: #1a8fa0;       /* teal from logo */
+  --color-primary-hover: #157a8a;
+  --color-accent: #00b87a;         /* green from logo */
+  --color-navy: #0d2d5e;           /* dark navy from logo */
   --color-secondary: #64748B;
-  --color-success: #059669;
+  --color-success: #00b87a;
   --color-error: #DC2626;
-  --color-bg: #F8FAFC;
+  --color-bg: #F8FAFC; 
   --color-card: #FFFFFF;
   --color-text: #0F172A;
   --color-text-muted: #64748B;
+  --color-border: #E2E8F0;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
 }
+
+[data-theme='dark'] {
+  /* DARK MODE (User Side) */
+  --color-primary: #2ab8cc;
+  --color-primary-hover: #1a8fa0;
+  --color-accent: #00d68f;
+  --color-navy: #0d2d5e;
+  --color-secondary: #94a3b8;
+  --color-success: #00d68f;
+  --color-error: #f87171;
+  --color-bg: #0a1628;
+  --color-card: #0f2040;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-border: #1e3a5f;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+}
+
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,6 +50,7 @@ body {
   line-height: 1.5;
   color: var(--color-text);
   background: var(--color-bg);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Dashboard */
@@ -137,7 +161,7 @@ body {
 .data-table td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .data-table th {
@@ -182,8 +206,17 @@ body {
 .navbar-brand {
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--color-text);
+  color: var(--color-navy);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .navbar-actions {
@@ -203,6 +236,13 @@ body {
 
 .nav-link:hover {
   color: var(--color-primary);
+}
+
+.nav-link-active {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 2px;
 }
 
 .profile-link {
@@ -340,7 +380,7 @@ body {
 .profile-divider {
   margin: 2rem 0;
   border: none;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
 }
 
 .link-btn {
@@ -361,7 +401,7 @@ body {
 /* ===== Preferences hero (onboarding) ===== */
 .preferences-hero-page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--color-bg);
   display: flex;
   flex-direction: column;
 }
@@ -373,7 +413,7 @@ body {
 .preferences-logo {
   font-weight: 700;
   font-size: 1.25rem;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .preferences-hero-main {
@@ -392,35 +432,35 @@ body {
   font-size: 2.25rem;
   line-height: 1.2;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: var(--color-text);
   margin-bottom: 0.75rem;
 }
 
 .preferences-hero-text {
   font-size: 0.98rem;
-  color: #64748b;
+  color: var(--color-text-muted);
   max-width: 520px;
   margin-bottom: 1.75rem;
 }
 
 .preferences-hero-card {
-  background: #ffffff;
+  background: var(--color-card);
   border-radius: 18px;
   padding: 1.5rem 1.75rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
   margin-bottom: 1.75rem;
 }
 
 .preferences-hero-card h2 {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .preferences-hero-card p {
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .preferences-hero-actions {
@@ -467,11 +507,11 @@ body {
 
 .preferences-questions-panel {
   margin-top: 1.5rem;
-  background: #ffffff;
+  background: var(--color-card);
   border-radius: 18px;
   padding: 1.75rem 1.75rem 1.5rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
 }
 
 .preferences-progress-bar {
@@ -489,21 +529,21 @@ body {
 .preferences-progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  background: linear-gradient(90deg, #1a8fa0, #00b87a);
   transition: width 0.2s ease-out;
 }
 
 .preferences-progress-label {
   margin-top: 0.4rem;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .preferences-question-text {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .preferences-choices-list {
@@ -516,23 +556,24 @@ body {
 .preferences-choice {
   text-align: left;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   padding: 0.7rem 0.9rem;
   font-size: 0.95rem;
-  background: #ffffff;
+  background: var(--color-card);
+  color: var(--color-text);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .preferences-choice:hover {
-  border-color: #4f46e5;
-  background: #f9fafb;
+  border-color: var(--color-primary);
+  background: var(--color-bg);
 }
 
 .preferences-choice-selected {
-  border-color: #4f46e5;
-  background: #eef2ff;
-  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
+  border-color: #1a8fa0;
+  background: #e8f7fa;
+  box-shadow: 0 0 0 1px rgba(26, 143, 160, 0.25);
 }
 
 .preferences-questions-footer {
@@ -577,8 +618,8 @@ body {
 .preference-chip {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: #e0f5f8;
+  color: #1a8fa0;
   font-size: 0.8rem;
   font-weight: 500;
 }
@@ -589,14 +630,14 @@ body {
 
 .prof-page {
   min-height: 100vh;
-  background: #f1f5f9;
+  background: var(--color-bg);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* --- Hero Banner --- */
 .prof-hero {
   position: relative;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+  background: linear-gradient(135deg, #0d2d5e 0%, #1a8fa0 60%, #00b87a 100%);
   padding: 3rem 2rem 5rem;
   overflow: hidden;
 }
@@ -725,11 +766,11 @@ body {
 
 /* --- Card --- */
 .prof-card {
-  background: #ffffff;
+  background: var(--color-card);
   border-radius: 20px;
   padding: 1.75rem;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
   transition: box-shadow 0.2s ease;
 }
 
@@ -748,8 +789,8 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-  color: #4f46e5;
+  background: linear-gradient(135deg, #e0f5f8, #ccf7ec);
+  color: #1a8fa0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -759,7 +800,7 @@ body {
 .prof-card-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 /* --- Form --- */
@@ -784,7 +825,7 @@ body {
 .prof-label {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -796,7 +837,9 @@ body {
 .prof-input {
   width: 100%;
   padding: 0.65rem 0.9rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
   border-radius: 10px;
   font-size: 0.9rem;
   font-family: inherit;

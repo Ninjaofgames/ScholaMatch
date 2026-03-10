@@ -1,0 +1,323 @@
+/* ============================================================
+   PUBLIC SCHOOLS PAGE
+   Inspired by the ScholaMatch reference screenshot (Image 2)
+   ============================================================ */
+
+.ps-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--color-text);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ── Hero / Search Header ── */
+.ps-hero {
+  background: linear-gradient(135deg, #10b981 0%, #059669 60%, #047857 100%);
+  padding: 3.5rem 2rem 4.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ps-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.ps-hero-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  position: relative;
+  letter-spacing: -0.03em;
+}
+
+.ps-hero-highlight {
+  color: #a7f3d0;
+}
+
+.ps-hero-sub {
+  color: rgba(255,255,255,0.82);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.ps-search-wrap {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.ps-search-input {
+  width: 100%;
+  padding: 0.9rem 1.2rem 0.9rem 3rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.97);
+  color: #1e293b;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  transition: box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.ps-search-input:focus {
+  outline: none;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+}
+
+.ps-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+/* ── Main Content ── */
+.ps-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  margin-top: -1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Stats & Tabs bar ── */
+.ps-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-card);
+  padding: 0.85rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ps-count {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.ps-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--color-bg);
+  padding: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+}
+
+.ps-tab {
+  padding: 0.45rem 1.1rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.ps-tab-active {
+  background: #10b981;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.35);
+}
+
+/* ── School Card Grid ── */
+.ps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .ps-grid { grid-template-columns: repeat(2, 1fr); }
+  .ps-hero-title { font-size: 1.8rem; }
+}
+
+@media (max-width: 580px) {
+  .ps-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Individual Card ── */
+.ps-card {
+  background: var(--color-card);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.ps-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+}
+
+/* Badge */
+.ps-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #10b981;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+/* Image area */
+.ps-card-image {
+  height: 170px;
+  background: #f1f5f9;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-theme='dark'] .ps-card-image {
+  background: #1e293b;
+}
+
+.ps-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ps-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ps-card-placeholder svg {
+  width: 70px;
+  height: 70px;
+  opacity: 0.7;
+}
+
+/* Body */
+.ps-card-body {
+  padding: 1rem 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.ps-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ps-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ps-stars {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.ps-card-rating-text {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.ps-card-location {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.ps-card-location svg {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+/* More button */
+.ps-card-btn {
+  display: block;
+  width: calc(100% + 2rem);
+  margin: 1rem -1rem 0;
+  padding: 0.85rem 1rem;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s ease, filter 0.2s ease;
+  font-family: inherit;
+}
+
+.ps-card-btn:hover {
+  background: #059669;
+  filter: brightness(1.05);
+}
+
+/* ── States ── */
+.ps-loading,
+.ps-error,
+.ps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.ps-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: ps-spin 0.8s linear infinite;
+}
+
+@keyframes ps-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ps-error p {
+  color: #ef4444;
+  font-weight: 500;
+}

@@ -1,17 +1,34 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useUserAuth } from '../context/UserAuthContext';
+import { useState, useEffect } from 'react';
 
 const UserNavbar = () => {
   const { user, logout } = useUserAuth();
+  const location = useLocation();
   const avatarUrl = user?.avatar_url;
   const API_URL = 'http://127.0.0.1:8000';
   const fullAvatarUrl = avatarUrl ? (avatarUrl.startsWith('http') ? avatarUrl : `${API_URL}${avatarUrl}`) : null;
 
+  // Theme Toggler Hook Settings
+  const [theme, setTheme] = useState(localStorage.getItem('userTheme') || 'light');
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('userTheme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   return (
     <nav className="user-navbar">
-      <Link to="/dashboard" className="navbar-brand">ScholaMatch</Link>
+      <Link to="/" className="navbar-brand">
+        <img src="/assets/logo.png" alt="ScholaMatch" className="navbar-logo-img" />
+        <span>ScholaMatch</span>
+      </Link>
       <div className="navbar-actions">
-        <Link to="/dashboard" className="nav-link">Dashboard</Link>
+        <Link to="/" className={`nav-link${location.pathname === '/' || location.pathname === '/schools' ? ' nav-link-active' : ''}`}>Schools</Link>
         <Link to="/profile" className="nav-link profile-link">
           {fullAvatarUrl ? (
             <img src={fullAvatarUrl} alt="Profile" className="navbar-avatar" />
@@ -21,6 +38,15 @@ const UserNavbar = () => {
             </svg>
           )}
         </Link>
+        <button 
+          type="button" 
+          onClick={toggleTheme} 
+          className="nav-link" 
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          style={{color: theme === 'light' ? '#f59e0b' : '#38bdf8', fontSize: '1.2rem', padding: '0 8px'}}
+        >
+          <i className={`fa-solid ${theme === 'light' ? 'fa-sun' : 'fa-moon'}`}></i>
+        </button>
         <button type="button" className="nav-link logout-btn" onClick={logout}>Logout</button>
       </div>
     </nav>

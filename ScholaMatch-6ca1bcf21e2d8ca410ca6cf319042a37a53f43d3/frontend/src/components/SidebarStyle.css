@@ -1,0 +1,130 @@
+.sidebar{
+    width: 62px;
+    min-height: 100vh;
+    background-image: linear-gradient(to bottom, #5FC3DC, #4BB84B);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16px;
+    padding-bottom: 24px;
+    font-family: sans-serif;
+    position: fixed;
+}
+
+.logo{
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 152px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.logo img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.sidebar__nav{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    width: 100%;
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    width: 100%;
+    height: 56px;
+    cursor: pointer;
+    transition: all 0.5s;
+    color: #ffffff;
+    font-size: 27.5px;
+}
+
+.nav-item:hover{
+    color: #5FC3DC;
+    transform: scale(1.1);
+    background-color: #4BB84B;
+}
+
+.nav-item:active{
+    opacity: 0.8;
+}
+
+.nav-item__bar{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    border-radius: 0 4px 4px 0;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(75, 184, 75, 0.7);
+    transition: height 0.2s ease;
+}
+
+.nav-item--active .nav-item__bar{
+    height: 32px;
+}
+
+.nav-item__tooltip{
+    position: absolute;
+    left: 66px;
+    background: #4BB84B;
+    color: #E8EFF6;
+    font-size: 12px;
+    font-family: "Google Sans", sans-serif;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    animation: tooltipFadeIn 0.15s ease forwards;
+}
+
+@keyframes tooltipFadeIn{
+    to{opacity: 1;}
+}
+
+.sidebar__logout{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 50px;
+    transition: color 0.2s ease;
+}
+
+.sidebar__logout:hover{
+    color: #e47c3c;
+}
+
+.credits{
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    color: #4BB84B;
+    margin-left: 62px;
+    margin-top: 40px;
+    margin-bottom: -20px;
+    padding: 20px;
+    z-index: 1;
+    position: relative;
+}
