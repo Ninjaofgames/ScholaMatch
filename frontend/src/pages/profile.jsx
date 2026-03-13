@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './modelStyle.css';
 import './profileStyle.css';
 import axios from "axios";
@@ -7,6 +7,9 @@ import { data } from "react-router-dom";
 import {Pie, PieChart, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 
 export default function Profile(){
+    useEffect(() => {
+        document.title = "ScholaMatch - Profile"
+    }, []);
     const [isEditing, setIsEditing] = useState(false);
     const dataPie = [
         { name: "Added", value: 34 },

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScholaMatch — Verify your email</title>
+  <style>
+    /* Reset and Base */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #E8EFF6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #E8EFF6;
+      padding: 40px 20px;
+    }
+    .main {
+      background-color: #ffffff;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 12px;
+      border-top: 6px solid #4BB84B;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    /* Header */
+    .header {
+      padding: 40px 40px 20px;
+      text-align: center;
+    }
+    .brand {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+    .brand .schola {
+      color: #2b3a4a;
+    }
+    .brand .match {
+      color: #4BB84B;
+    }
+    /* Content */
+    .content {
+      padding: 20px 40px 40px;
+      text-align: center;
+      color: #2b3a4a;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #2b3a4a;
+    }
+    .message {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #556b82;
+    }
+    /* Code Block */
+    .code-container {
+      background-color: rgba(95, 195, 220, 0.1);
+      border: 2px dashed #5FC3DC;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 300px;
+    }
+    .code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: #4BB84B;
+      margin: 0;
+      text-align: center;
+    }
+    .expiration {
+      font-size: 14px;
+      color: #8fa3b8;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+    /* Footer */
+    .footer {
+      background-color: #f7fbff;
+      padding: 20px 40px;
+      text-align: center;
+      border-top: 1px solid #e1e8f0;
+    }
+    .footer p {
+      margin: 0;
+      font-size: 13px;
+      color: #8fa3b8;
+      line-height: 1.5;
+    }
+    /* Responsive Variables */
+    @media screen and (max-width: 600px) {
+      .wrapper {
+        padding: 20px 10px;
+      }
+      .header, .content, .footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .code {
+        font-size: 28px;
+        letter-spacing: 4px;
+      }
+      .brand {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Container Table for better email client support -->
+    <table align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; margin: 0 auto;">
+      <tr>
+        <td>
+          <div class="main">
+            <!-- Header -->
+            <div class="header">
+              <!-- Using text styling for the logo since email clients often block external images -->
+              <h1 class="brand"><span class="schola">Schola</span><span class="match">Match</span></h1>
+            </div>
+            
+            <!-- Body -->
+            <div class="content">
+              <h2 class="title">Verify Your Account</h2>
+              <p class="message">
+                Welcome to ScholaMatch! To complete your registration and activate your account, please enter the verification code below in the app.
+              </p>
+              
+              <div class="code-container">
+                <p class="code">{{ code }}</p>
+              </div>
+              
+              <p class="expiration">This code will expire in 10 minutes.</p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+              <p>If you did not request this verification code, you can safely ignore this email. Another user may have entered your email address by mistake.</p>
+              <p style="margin-top: 10px;">&copy; 2026 ScholaMatch. All rights reserved.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

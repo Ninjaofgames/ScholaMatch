@@ -250,3 +250,99 @@ h3.h3{
     height: 44px;
     white-space: nowrap;
 }
+
+.formGroup select{
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #4BB84B;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #E8EFF6;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.1s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.formGroup select:focus{
+    outline: none;
+    border-color: #5FC3DC;
+    box-shadow: 0 0 8px rgba(95, 195, 220, 0.4);
+}
+
+.formGroup select option{
+    background-color: #2b3a4a;
+    color: #E8EFF6;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1024px) {
+    .modelMain {
+        margin-left: 0;
+        padding: 0 15px;
+    }
+    .dropArea, .manAdd {
+        width: 90%;
+        padding: 20px;
+    }
+    .title {
+        font-size: 36px;
+        text-align: center;
+    }
+    .subtitle {
+        margin-left: 0;
+        text-align: center;
+    }
+    .modelName {
+        font-size: 30px;
+        letter-spacing: 10px;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dropArea, .manAdd {
+        width: 100%;
+        padding: 15px;
+    }
+    .title {
+        font-size: 28px;
+    }
+    .modelName {
+        font-size: 22px;
+        letter-spacing: 5px;
+    }
+    .searchBar {
+        flex-direction: column;
+        gap: 8px;
+    }
+    h3.h3 {
+        font-size: 20px;
+        text-align: center;
+    }
+    .manAdd form label {
+        margin-left: 0;
+        font-size: 16px;
+    }
+    .radioGroup {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .title {
+        font-size: 24px;
+    }
+    .modelName {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+    .uploadBtn, .manAdd button {
+        width: 100%;
+        font-size: 14px;
+    }
+    .manAdd textarea {
+        min-height: 100px;
+    }
+}

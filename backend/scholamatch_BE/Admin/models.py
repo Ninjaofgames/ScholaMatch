@@ -1,9 +1,10 @@
 from django.db import models
+from django.utils import timezone
 
 class Analysis(models.Model):
     id_analysis = models.AutoField(primary_key=True)
     polarity = models.TextField(blank=True, null=True)  # This field type is a guess.
-    id_comment = models.ForeignKey('Comment', models.DO_NOTHING, db_column='id_comment')       
+    id_comment = models.ForeignKey('Comment', models.DO_NOTHING, db_column='id_comment')
     id_aspect = models.ForeignKey('Aspect', models.DO_NOTHING, db_column='id_aspect')
 
     class Meta:
@@ -102,10 +103,10 @@ class Choice(models.Model):
 class Comment(models.Model):
     id_comment = models.AutoField(primary_key=True)
     data_source = models.CharField(max_length=255, blank=True, null=True)
-    comment_date = models.DateTimeField(auto_now_add=True)
+    comment_date = timezone.now()
     comment_content = models.TextField()
     sentiment_score = models.FloatField(blank=True, null=True)
-    sentiment_label = models.TextField(blank=True, null=True)  # This field type is a guess.   
+    sentiment_label = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
         managed = False
@@ -228,7 +229,7 @@ class SchoolSpeciality(models.Model):
 class SessionTest(models.Model):
     id_session = models.AutoField(primary_key=True)
     id_utilisateur = models.IntegerField()
-    id_test = models.ForeignKey(PersonalityTest, models.DO_NOTHING, db_column='id_test')       
+    id_test = models.ForeignKey(PersonalityTest, models.DO_NOTHING, db_column='id_test')
     date = models.DateField(blank=True, null=True)
 
     class Meta:
@@ -248,7 +249,7 @@ class Speciality(models.Model):
 class TestQuestion(models.Model):
     id_question = models.AutoField(primary_key=True)
     question_content = models.TextField()
-    id_test = models.ForeignKey(PersonalityTest, models.DO_NOTHING, db_column='id_test')       
+    id_test = models.ForeignKey(PersonalityTest, models.DO_NOTHING, db_column='id_test')
 
     class Meta:
         managed = False
@@ -263,6 +264,8 @@ class User(models.Model):
     role = models.TextField(blank=True, null=True)  # This field type is a guess.
     prenom = models.CharField(max_length=100, blank=True, null=True)
     nom = models.CharField(max_length=100, blank=True, null=True)
+    is_verified = models.BooleanField(blank=True, null=True)
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
 
     class Meta:
         managed = False

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',   #Rest API here
+    'rest_framework.authtoken',
     'corsheaders',  #Rest API here
     'Admin',
 ]
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'scholamatch_BE.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'scholamatch_BE' / 'Admin'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,6 +137,21 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+#For SMTP sending
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'testbadr35@gmail.com'
+EMAIL_HOST_PASSWORD = 'oepu zhdx ugus cnuk'
+DEFAULT_FROM_EMAIL = 'testbadr35@gmail.com'
 # For production phase
 #STATICFILES_DIRS = [BASE_DIR / "../../frontend/dist"]
 #TEMPLATES[0]["DIRS"] = [BASE_DIR / "../../frontend/dist"]

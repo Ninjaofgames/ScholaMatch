@@ -7,21 +7,26 @@ import FooterComp from "../components/footer";
 export default function Model(){
     //Form section
     const [comment, setComment] = useState("");
-    const [sentiment_label, setLabel] = useState("postive");
-    const [sentiment_score, setSentimentScore] = useState(0);
+    //Extendable list
+    const [aspects, setAspects] = useState([{ aspect: '', polarity: 'positive'}]);
+    const addAspect = () => setAspects([...aspects, { aspect: '', polarity: 'positive' }]);
+    const removeAspect = (index) => setAspects(aspects.filter((_, i) => i !== index));
+    const handleAspectChange = (index, field, value) => {
+        const updated = [...aspects];
+        updated[index][field] = value;
+        setAspects(updated);
+    }
     
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post("http://127.0.0.1:8000/api/comments/", {
                 comment_content: comment,
-                sentiment_label: sentiment_label,
-                sentiment_score: sentiment_score,
+                aspects: aspects,
                 data_source: "manual"
             });
             setComment("");
-            setLabel("postive");
-            setSentimentScore(0);
+            setAspects([{ aspect: '', polarity: 'positive' }]);
             alert("Comment submitted successfully!");
         } catch (error) {
             console.log("Error details:", error.response?.data);
@@ -70,26 +75,33 @@ export default function Model(){
                     <form onSubmit={handleSubmit}>
                         <label>Comment</label>
                         <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Put your comment here" required></textarea>
-                        
-                        <div className="formGroup">
-                            <label>Sentiment</label>
-                            <div className="radioGroup">
-                                <label>
-                                    <input type="radio" value="postive" checked={sentiment_label === "postive"} onChange={(e) => setLabel(e.target.value)} />
-                                    <span className="radioLabel positive">Positive</span>
-                                </label>
-                                <label>
-                                    <input type="radio" value="neutral" checked={sentiment_label === "neutral"} onChange={(e) => setLabel(e.target.value)} />
-                                    <span className="radioLabel neutral">Neutral</span>
-                                </label>
-                                <label>
-                                    <input type="radio" value="negative" checked={sentiment_label === "negative"} onChange={(e) => setLabel(e.target.value)} />
-                                    <span className="radioLabel negative">Negative</span>
-                                </label>
-                            </div>
+                        <div className="formGroup aspect-list">
+                            <label>Aspects</label>
+                            {aspects.map((item, index) => (
+                                <div className="aspect-row searchBar" key={index}>
+                                    <input
+                                        type="text"
+                                        placeholder="Aspect name"
+                                        value={item.aspect}
+                                        onChange={ (e) => handleAspectChange(index, 'aspect', e.target.value)}
+                                        required
+                                    />
+                                    <select
+                                        value={item.polarity}
+                                        onChange={(e) => handleAspectChange(index, 'polarity', e.target.value)}
+                                    >
+                                        <option value="positive">Positive</option>
+                                        <option value="neutral">Neutral</option>
+                                        <option value="negative">Negative</option>
+                                    </select>
+                                    {aspects.length > 1 && (
+                                        <button type="button" onClick={() => removeAspect(index)} style={{marginTop: 0, padding: "0 20px"}}>-</button>
+                                    )}
+                                </div>
+                            ))}
+                            <button type="button" onClick={addAspect} style={{marginTop: "5px"}}>+ Add Aspect</button>
                         </div>
-                        <label>Sentiment Score</label>
-                        <input type="number" onChange={(e) => setSentimentScore(e.target.value)} placeholder="Formula: Score= (NPos * 1) + (NNeu * 0) + (NNeg * (-1))" step={"any"} required/>
+                        <button type="submit">Submit Comment</button>
                     </form>
                 </div>
             </div>
