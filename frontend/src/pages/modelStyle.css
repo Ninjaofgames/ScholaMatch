@@ -276,6 +276,91 @@ h3.h3{
     color: #E8EFF6;
 }
 
+/* School Search Styles */
+.school-search-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.school-search-input {
+    margin-bottom: 5px;
+}
+
+.school-results-dropdown {
+    position: absolute;
+    top: calc(100% - 5px);
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeInDown 0.3s ease;
+}
+
+.school-result-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.school-result-item:last-child {
+    border-bottom: none;
+}
+
+.school-result-item:hover {
+    background: rgba(75, 184, 75, 0.2);
+    color: #4BB84B;
+    padding-left: 25px;
+}
+
+.school-result-item i {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.selected-school-tip {
+    font-size: 14px;
+    color: #4BB84B;
+    margin-top: 8px;
+    font-style: italic;
+    font-weight: 500;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar styling for dropdown */
+.school-results-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.school-results-dropdown::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.school-results-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(75, 184, 75, 0.5);
+    border-radius: 10px;
+}
+
 /* Responsive Styles */
 @media screen and (max-width: 1024px) {
     .modelMain {

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const navItems = [
     {
         id: "home",
-        path: "/",
+        path: "/admin/dashboard",
         icon:(
             <i className="fa-solid fa-house"></i>
         ),
@@ -13,7 +13,7 @@ const navItems = [
     },
     {
         id: "manage",
-        path: "/schoolM",
+        path: "/admin/schoolM",
         icon:(
             <i className="fa-solid fa-graduation-cap"></i>
         ),
@@ -21,7 +21,7 @@ const navItems = [
     },
     {
         id: "model",
-        path: "/modelTrain",
+        path: "/admin/modelTrain",
         icon:(
             <i className="fa-solid fa-microchip"></i>
         ),
@@ -29,7 +29,7 @@ const navItems = [
     },
     {
         id: "account",
-        path: "/profile",
+        path: "/admin/profile",
         icon:(
             <i className="fa-solid fa-user"></i>
         ),

@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/auth/profile/',       ProfileView.as_view()),
     path('api/auth/admin/login/',   AdminLoginView.as_view()),
     path('api/admin/dashboard/',    AdminDashboardView.as_view()),
+    path('api/schools/search/',     views.search_schools),
 ]

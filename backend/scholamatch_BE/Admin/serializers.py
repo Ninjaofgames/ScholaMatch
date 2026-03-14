@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Comment, Aspect, Analysis
+from .models import Comment, Aspect, Analysis, SchoolComment
 
 class AspectSerializer(serializers.Serializer):
     aspect = serializers.CharField()
@@ -7,12 +7,14 @@ class AspectSerializer(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     aspects = AspectSerializer(many=True, write_only=True)
+    school_id = serializers.IntegerField(write_only=True, required=False)
     class Meta:
         model = Comment
-        fields = ['comment_content', 'data_source', 'comment_date', 'aspects']
+        fields = ['comment_content', 'data_source', 'comment_date', 'aspects', 'school_id']
         read_only_fields = ['comment_date']
     def create(self, validated_data):
         aspects_data = validated_data.pop('aspects')
+        school_id = validated_data.pop('school_id', None)
         npos = 0
         nneg = 0
         for item in aspects_data:
@@ -34,6 +36,11 @@ class CommentSerializer(serializers.ModelSerializer):
             sentiment_score=score,
             sentiment_label=label,
         )
+        if school_id:
+            SchoolComment.objects.create(
+                id_school=school_id,
+                id_comment=comment,
+            )
         for item in aspects_data:
             aspect, _ = Aspect.objects.get_or_create(aspect_name=item['aspect'])
             Analysis.objects.create(

@@ -16,7 +16,27 @@ export default function Model(){
         updated[index][field] = value;
         setAspects(updated);
     }
-    
+
+    //School Search
+    const [schoolQuery, setSchoolQuery] = useState('');
+    const [schoolResults, setSchoolResults] = useState([]);
+    const [selectedSchool, setSelectedSchool] = useState(null);
+    const handleSchoolSearch = (e) => {
+        setSchoolQuery(e.target.value);
+        setSelectedSchool(null);
+    };
+    useEffect(() => {
+        if (schoolQuery.length < 2) {
+            setSchoolResults([]);
+            return;
+        }
+        const fetchSchools = async () => {
+            const res = await axios.get(`http://127.0.0.1:8000/api/schools/search/?q=${schoolQuery}`);
+            setSchoolResults(res.data);
+        }
+        fetchSchools();
+    }, [schoolQuery]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -55,6 +75,9 @@ export default function Model(){
         .then(res => console.log(res.data))
         .catch(err => console.log("Connection failed!", err));
     }, []);
+    useEffect(() => {
+        document.title = "ScholaMatch - Comments"
+    }, []);
     return(
         <div className="modelMain">
             <h1 className="title">Add comments</h1>
@@ -75,6 +98,37 @@ export default function Model(){
                     <form onSubmit={handleSubmit}>
                         <label>Comment</label>
                         <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Put your comment here" required></textarea>
+                        <div className="formGroup school-search-container">
+                            <label>School name</label>
+                            <input
+                                type="text"
+                                placeholder="Search school..."
+                                value={schoolQuery}
+                                onChange={handleSchoolSearch}
+                                className="school-search-input"
+                            />
+                            {schoolResults.length > 0 && (
+                                <div className="school-results-dropdown">
+                                    {schoolResults.map(school => (
+                                        <div 
+                                            key={school.id} 
+                                            className="school-result-item"
+                                            onClick={() => {
+                                                setSelectedSchool(school);
+                                                setSchoolQuery(school.name);
+                                                setSchoolResults([]);
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-school"></i>
+                                            <span>{school.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedSchool && !schoolResults.length && (
+                                <p className="selected-school-tip">✓ Selected: {selectedSchool.name}</p>
+                            )}
+                        </div>
                         <div className="formGroup aspect-list">
                             <label>Aspects</label>
                             {aspects.map((item, index) => (

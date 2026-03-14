@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './modelStyle.css';
 import axios from "axios";
 
@@ -96,7 +96,9 @@ export default function SchoolManagement(){
             alert("Error deleting school: " + (error.response?.data?.error || "Unknown error"));
         }
     };
-
+    useEffect(() => {
+        document.title = "ScholaMatch - School Management"
+    }, []);
     return (
         <div className="modelMain">
             <h1 className="title">School Management</h1>

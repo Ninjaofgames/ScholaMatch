@@ -92,6 +92,9 @@ export default function Home(){
                 })
                 .start();
         }, []);
+        useEffect(() => {
+            document.title = "ScholaMatch - Dashboard"
+        }, []);
     return(
         <div className="profileMain">
             <h1 className="title">Dashboard</h1>

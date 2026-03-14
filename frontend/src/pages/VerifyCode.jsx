@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUserAuth } from '../context/UserAuthContext';
 import Button from '../components/Button';
@@ -16,6 +16,21 @@ export default function VerifyCode() {
   const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,12 +43,26 @@ export default function VerifyCode() {
     try {
       const res = await userAuthService.verifyEmail(email, code);
       if (res.success) {
-        setVerifiedUser(res.token, res.user);
-        navigate('/preferences');
+        if (res.token) {
+          setVerifiedUser(res.token, res.user);
+          navigate('/preferences');
+        } else {
+          setSuccess(res.message || 'Email verified! Please login.');
+          setTimeout(() => navigate('/login'), 3000);
+        }
       }
     } catch (err) {
-      const errData = err.response?.data?.errors || err.response?.data;
-      const msg = typeof errData === 'object' ? (errData.code?.[0] || errData.email?.[0] || 'Verification failed') : 'Verification failed';
+      const errData = err.response?.data?.errors || err.response?.data || {};
+      let msg = 'Verification failed';
+      
+      if (typeof errData === 'object') {
+        const firstError = errData.code?.[0] || 
+                           errData.email?.[0] || 
+                           errData.non_field_errors?.[0] || 
+                           errData.detail ||
+                           errData.error;
+        if (firstError) msg = firstError;
+      }
       setError(msg);
     } finally {
       setLoading(false);
@@ -46,7 +75,10 @@ export default function VerifyCode() {
     setSuccess('');
     try {
       const res = await userAuthService.resendCode(email);
-      if (res.success) setSuccess('Code sent to your email');
+      if (res.success) {
+        setSuccess('Code sent to your email');
+        setTimeLeft(600); // Reset timer
+      }
     } catch (err) {
       const errData = err.response?.data?.errors || err.response?.data;
       setError(typeof errData === 'object' ? Object.values(errData).flat()[0] : 'Failed to resend');
@@ -87,6 +119,17 @@ export default function VerifyCode() {
         <Button type="submit" loading={loading} fullWidth>
           Verify
         </Button>
+        <div className="countdown-timer" style={{ 
+          textAlign: 'center', 
+          marginTop: '15px', 
+          fontSize: '0.92rem', 
+          color: timeLeft < 60 ? '#ef4444' : 'rgba(255, 255, 255, 0.6)'
+        }}>
+          Code expires in: <span style={{ 
+            color: timeLeft < 60 ? '#ef4444' : '#4BB84B', 
+            fontWeight: '600' 
+          }}>{formatTime(timeLeft)}</span>
+        </div>
         <p className="auth-footer" style={{ marginTop: '16px', textAlign: 'center' }}>
           Didn&apos;t receive the code?{' '}
           <button type="button" onClick={handleResend} disabled={resendLoading} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>

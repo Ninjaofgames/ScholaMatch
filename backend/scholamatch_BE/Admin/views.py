@@ -7,10 +7,11 @@ from django.core.mail import send_mail
 from .email_renderer import send_html_email
 from django.contrib.auth.hashers import make_password, check_password
 import random
-from .models import Comment, User
+from .models import Comment, User, School
 from .serializers import CommentSerializer
 import csv
 import io
+import secrets
 
 @api_view(['GET'])
 def test_connection(request):
@@ -69,6 +70,7 @@ class RegisterView(APIView):
             password=make_password(request.data.get('password')),
             verification_code=code,
             is_verified=False,
+            role='user',
         )
         send_html_email(
             subject='Verify your ScholaMatch email',
@@ -81,18 +83,39 @@ class RegisterView(APIView):
     
 class VerifyEmailView(APIView):
     def post(self, request):
-        email, code = request.data['email'], request.data['code']
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({ 'errors': { 'email': ['User not found'] } }, status=400)
-        if user.verification_code != code:
-            return Response({ 'errors': { 'code': ['Invalid code'] } }, status=400)
-        user.is_verified = True
-        user.verification_code = ''
-        user.save()
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({ 'success': True, 'token': token.key, 'user': { 'email': user.email } })
+            email = request.data.get('email')
+            code = request.data.get('code')
+            
+            if not email or not code:
+                return Response({ 'errors': { 'non_field_errors': ['Email and code are required'] } }, status=400)
+
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({ 'errors': { 'email': ['User not found'] } }, status=400)
+
+            # Ensure both are strings and stripped of whitespace for comparison
+            if str(user.verification_code).strip() != str(code).strip():
+                return Response({ 'errors': { 'code': ['Invalid code'] } }, status=400)
+
+            user.is_verified = True
+            user.verification_code = ''
+            user.save()
+            
+            try:
+                token, _ = Token.objects.get_or_create(user=user)
+                return Response({ 'success': True, 'token': token.key, 'user': { 'email': user.email } })
+            except Exception as token_err:
+                # If token creation fails (e.g. model mismatch), we still mark as verified
+                # but might need to handle the response differently
+                return Response({ 
+                    'success': True, 
+                    'message': 'Email verified, but session creation failed. Please login.',
+                    'user': { 'email': user.email } 
+                })
+        except Exception as e:
+            return Response({ 'errors': { 'non_field_errors': [str(e)] } }, status=500)
 
 class ResendCodeView(APIView):
     def post(self, request):
@@ -115,12 +138,11 @@ class LoginView(APIView):
             user = User.objects.get(email=request.data['email'])
         except User.DoesNotExist:
             return Response({ 'detail': 'Invalid credentials' }, status=400)
-        if not user.check_password(request.data['password'], user.password):
+        if not check_password(request.data['password'], user.password):
             return Response({ 'detail': 'Invalid credentials' }, status=400)
         if not user.is_verified:
             return Response({ 'detail': 'Email not verified' }, status=403)
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({ 'success': True, 'token': token.key, 'user': { 'email': user.email } })
+        return Response({ 'success': True, 'token': f'user-{user.id_user}', 'user': { 'email': user.email } })
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -133,15 +155,21 @@ class AdminLoginView(APIView):
         try:
             user = User.objects.get(email=request.data['email'])
         except User.DoesNotExist:
+            return Response({ 'detail': 'Invalid credentials' }, status=403)
+        if not check_password(request.data['password'], user.password):
+            return Response({ 'detail': 'Invalid credentials' }, status=403)
+        if user.role != 'admin':
             return Response({ 'detail': 'Unauthorized' }, status=403)
-        if not user.check_password(request.data['password']):
-            return Response({ 'detail': 'Unauthorized' }, status=403)
-        if not user.is_staff:
-            return Response({ 'detail': 'Unauthorized' }, status=403)
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({ 'success': True, 'token': token.key, 'user': { 'email': user.email } })
+        return Response({ 'success': True, 'token': f'admin-{user.id_user}', 'user': { 'email': user.email } })
 
 class AdminDashboardView(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request):
         return Response({ 'data': { 'admin': { 'email': request.user.email } } })
+
+@api_view(['GET'])
+def search_schools(request):
+    query = request.GET.get('q', '')
+    schools = School.objects.filter(school_name__icontains=query)[:10]
+    data = [{ 'id': s.id_school, 'name': s.school_name} for s in schools]
+    return Response(data)
