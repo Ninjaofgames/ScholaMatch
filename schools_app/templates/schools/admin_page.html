@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management - Add school</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'schools/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <nav class="sidebar">
+        <a href="#" class="logo">
+            <i class="fas fa-graduation-cap"></i>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-house"></i>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-gear"></i>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-users"></i>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-power-off"></i>
+        </a>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>School management</h1>
+            <span class="subtitle">Add school.</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Add School Section -->
+        <section class="section">
+            <h2>Add thumbnail photo.</h2>
+            <form method="post" enctype="multipart/form-data" id="add-form">
+                {% csrf_token %}
+                {% if add_form.non_field_errors %}
+                <div class="form-errors">{{ add_form.non_field_errors }}</div>
+                {% endif %}
+                <div class="upload-area" id="upload-area-add">
+                    <input type="file" name="thumbnail" id="id_thumbnail_add" accept="image/png,image/jpeg,image/jpg,image/gif" class="file-input">
+                    <div class="upload-placeholder">
+                        <i class="fas fa-download"></i>
+                        <button type="button" class="btn-upload" onclick="document.getElementById('id_thumbnail_add').click()">UPLOAD</button>
+                        <p>Drop your images here, or click to browse</p>
+                        <span>1600 x 900 px Recommended. PNG, JPG and GIF files are allowed.</span>
+                    </div>
+                </div>
+
+                <h3>School information.</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Name</label>
+                        {{ add_form.name }}
+                        {% if add_form.name.errors %}<span class="error">{{ add_form.name.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Link of the website</label>
+                        {{ add_form.website_link }}
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        {{ add_form.location }}
+                    </div>
+                    <div class="form-group">
+                        <label>Link of the location</label>
+                        {{ add_form.location_link }}
+                    </div>
+                    <div class="form-group">
+                        <label>Mail</label>
+                        {{ add_form.mail }}
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        {{ add_form.phone }}
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group radio-group">
+                        <label>Funding type</label>
+                        <div class="radio-options">
+                            {% for choice in add_form.funding_type.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="funding_type" value="{{ choice.0 }}" {% if choice.0 == 'public' %}checked{% endif %}>
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group radio-group">
+                        <label>Education Level</label>
+                        <div class="radio-options">
+                            {% for choice in add_form.education_level.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="education_level" value="{{ choice.0 }}" {% if choice.0 == 'primary' %}checked{% endif %}>
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group radio-group full-width">
+                        <label>Teaching language</label>
+                        <div class="radio-options">
+                            {% for choice in add_form.teaching_language.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="teaching_language" value="{{ choice.0 }}" {% if choice.0 == 'bilingual' %}checked{% endif %}>
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                            {{ add_form.teaching_language_other }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>University name (for college)</label>
+                        {{ add_form.university_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Keywords (maximum 4)</label>
+                        {{ add_form.keywords }}
+                    </div>
+                </div>
+
+                <p class="info-note"><i class="fas fa-info-circle"></i> Our system requires real user comments to train the model before a school can be added to the database.</p>
+                <button type="submit" name="add_school" class="btn-submit">Add School</button>
+            </form>
+        </section>
+
+        <!-- Modify School Section -->
+        <section class="section">
+            <h2>Modify school.</h2>
+            <form method="post" enctype="multipart/form-data" id="modify-form">
+                {% csrf_token %}
+                <h3>School information.</h3>
+                <div class="form-group search-id">
+                    <label>Id of school (To search)</label>
+                    <input type="text" id="modify-school-id" placeholder="ID" class="form-input">
+                    <button type="button" class="btn-search" id="btn-search-school">Search</button>
+                </div>
+
+                <input type="hidden" name="school_id" id="modify-school-id-hidden">
+
+                <div class="upload-area" id="upload-area-modify">
+                    <input type="file" name="thumbnail" id="id_thumbnail_modify" accept="image/png,image/jpeg,image/jpg,image/gif" class="file-input">
+                    <div class="upload-placeholder">
+                        <i class="fas fa-download"></i>
+                        <button type="button" class="btn-upload" onclick="document.getElementById('id_thumbnail_modify').click()">UPLOAD</button>
+                        <p>Drop your images here, or click to browse</p>
+                        <span>1600 x 900 px Recommended. PNG, JPG and GIF files are allowed.</span>
+                    </div>
+                </div>
+
+                <div class="form-grid modify-fields">
+                    <div class="form-group">
+                        <label>Name</label>
+                        {{ modify_form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Link of the website</label>
+                        {{ modify_form.website_link }}
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        {{ modify_form.location }}
+                    </div>
+                    <div class="form-group">
+                        <label>Link of the location</label>
+                        {{ modify_form.location_link }}
+                    </div>
+                    <div class="form-group">
+                        <label>Mail</label>
+                        {{ modify_form.mail }}
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        {{ modify_form.phone }}
+                    </div>
+                </div>
+
+                <div class="form-grid modify-fields">
+                    <div class="form-group radio-group">
+                        <label>Funding type</label>
+                        <div class="radio-options">
+                            {% for choice in modify_form.funding_type.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="funding_type" value="{{ choice.0 }}">
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group radio-group">
+                        <label>Education Level</label>
+                        <div class="radio-options">
+                            {% for choice in modify_form.education_level.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="education_level" value="{{ choice.0 }}">
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid modify-fields">
+                    <div class="form-group radio-group full-width">
+                        <label>Teaching language</label>
+                        <div class="radio-options">
+                            {% for choice in modify_form.teaching_language.field.choices %}
+                            <label class="radio-label">
+                                <input type="radio" name="teaching_language" value="{{ choice.0 }}">
+                                {{ choice.1 }}
+                            </label>
+                            {% endfor %}
+                            {{ modify_form.teaching_language_other }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid modify-fields">
+                    <div class="form-group">
+                        <label>University name (for college)</label>
+                        {{ modify_form.university_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Keywords (maximum 4)</label>
+                        {{ modify_form.keywords }}
+                    </div>
+                </div>
+
+                <p class="info-note"><i class="fas fa-info-circle"></i> Our system requires real user comments to train the model before a school can be added to the database.</p>
+                <button type="submit" name="modify_school" class="btn-submit">Update School</button>
+            </form>
+        </section>
+
+        <!-- Delete School Section -->
+        <section class="section delete-section">
+            <h2>Delete school.</h2>
+            <form method="post" class="delete-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Enter the ID of school to delete it</label>
+                    <input type="text" name="delete_school_id" placeholder="ID" class="form-input">
+                </div>
+                <button type="submit" name="delete_school" class="btn-delete">Delete School</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Right Sidebar - Overview -->
+    <aside class="overview-sidebar">
+        <h2>Overview.</h2>
+        {% if overview_school %}
+        <div class="school-card">
+            {% if overview_school.thumbnail %}
+            <img src="{{ overview_school.thumbnail.url }}" alt="{{ overview_school.name }}">
+            {% else %}
+            <div class="school-card-placeholder">
+                <i class="fas fa-school"></i>
+            </div>
+            {% endif %}
+            <h3>{{ overview_school.name }}</h3>
+            <div class="rating">
+                {% for i in "12345" %}
+                <i class="fas fa-star {% if forloop.counter <= overview_school.rating %}filled{% endif %}"></i>
+                {% endfor %}
+                <span>{{ overview_school.rating }} ({{ overview_school.review_count }} reviews)</span>
+            </div>
+            <p class="location"><i class="fas fa-location-dot"></i> {{ overview_school.location|default:"No location" }}</p>
+            <a href="#" class="btn-more">MORE</a>
+        </div>
+        {% else %}
+        <div class="school-card empty">
+            <p>No schools yet. Add your first school!</p>
+        </div>
+        {% endif %}
+    </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+        Created by team --- all rights reserved
+    </footer>
+
+    <script>
+        // Search school by ID and populate modify form
+        document.getElementById('btn-search-school').addEventListener('click', function() {
+            const id = document.getElementById('modify-school-id').value;
+            if (!id) {
+                alert('Please enter a school ID');
+                return;
+            }
+            fetch('/search-school/?id=' + id)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    document.getElementById('modify-school-id-hidden').value = data.id;
+                    document.querySelector('#modify-form input[name="name"]').value = data.name;
+                    document.querySelector('#modify-form input[name="website_link"]').value = data.website_link;
+                    document.querySelector('#modify-form input[name="location"]').value = data.location;
+                    document.querySelector('#modify-form input[name="location_link"]').value = data.location_link;
+                    document.querySelector('#modify-form input[name="mail"]').value = data.mail;
+                    document.querySelector('#modify-form input[name="phone"]').value = data.phone;
+                    document.querySelectorAll('#modify-form input[name="funding_type"]').forEach(r => {
+                        r.checked = r.value === data.funding_type;
+                    });
+                    document.querySelectorAll('#modify-form input[name="education_level"]').forEach(r => {
+                        r.checked = r.value === data.education_level;
+                    });
+                    document.querySelectorAll('#modify-form input[name="teaching_language"]').forEach(r => {
+                        r.checked = r.value === data.teaching_language;
+                    });
+                    document.querySelector('#modify-form input[name="university_name"]').value = data.university_name;
+                    document.querySelector('#modify-form input[name="keywords"]').value = data.keywords;
+                    const otherInput = document.querySelector('#modify-form input[name="teaching_language_other"]');
+                    if (otherInput) otherInput.value = data.teaching_language_other;
+                })
+                .catch(err => alert('Error loading school'));
+        });
+
+        // Drag and drop for upload areas
+        ['upload-area-add', 'upload-area-modify'].forEach(id => {
+            const area = document.getElementById(id);
+            const input = area.querySelector('input[type="file"]');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.add('dragover'));
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.remove('dragover'));
+            });
+            area.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length && files[0].type.startsWith('image/')) {
+                    input.files = files;
+                    area.querySelector('p').textContent = 'File selected: ' + files[0].name;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

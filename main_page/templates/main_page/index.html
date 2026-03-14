@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholamatch — Smarter Educational Choices</title>
+    <meta name="description"
+        content="Discover and compare schools through sentiment analysis. Find the best schools near you with Scholamatch.">
+    <link rel="stylesheet" href="{% static 'main_page/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <span class="brand-text">schola<strong>match</strong></span>
+            </a>
+
+            <div class="navbar-links">
+                <a href="{% url 'home' %}" class="nav-link active">Schools</a>
+                <a href="#" class="nav-link">Partner portal</a>
+            </div>
+
+            <div class="navbar-actions">
+                <a href="{% url 'admin_page' %}" class="btn-login">
+                    <i class="fas fa-user"></i> Login
+                </a>
+                <button class="icon-btn" id="dark-mode-toggle" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn" title="Language">
+                    <i class="fas fa-globe"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════ SEARCH BAR ═══════════ -->
+    <section class="search-section">
+        <form class="search-bar" method="get" action="{% url 'home' %}">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search" value="{{ query }}" autocomplete="off">
+            </div>
+            <button type="submit" class="search-filter-btn" title="Search">
+                <i class="fas fa-filter"></i>
+            </button>
+        </form>
+    </section>
+
+    <!-- ═══════════ HERO BANNER ═══════════ -->
+    <section class="hero">
+        <img src="{% static 'main_page/images/hero_banner.png' %}" alt="Campus" class="hero-img">
+        <div class="hero-overlay">
+            <h1>Smarter educational choices through sentiment analysis</h1>
+        </div>
+    </section>
+
+    <!-- ═══════════ SCHOOL CARDS ═══════════ -->
+    <main class="schools-section">
+        {% if schools %}
+        <div class="school-grid">
+            {% for school in schools %}
+            <article class="school-card" id="school-card-{{ school.id }}">
+                <div class="card-image">
+                    {% if school.thumbnail %}
+                    <img src="{{ school.thumbnail.url }}" alt="{{ school.name }}">
+                    {% else %}
+                    <div class="card-image-placeholder">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    {% endif %}
+                    <span class="card-badge">scholamatch</span>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ school.name }}</h2>
+                    <div class="card-rating">
+                        {% for i in "12345" %}
+                        <i class="fas fa-star {% if forloop.counter <= school.rating %}filled{% endif %}"></i>
+                        {% endfor %}
+                        <span class="rating-text">{{ school.rating }} ({{ school.review_count }} reviews)</span>
+                    </div>
+                    <p class="card-location">
+                        <i class="fas fa-location-dot"></i>
+                        {{ school.location|default:"No location" }}
+                    </p>
+                </div>
+                <a href="{% url 'school_detail' school_id=school.id %}" class="card-more-btn">MORE</a>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-school"></i>
+            {% if query %}
+            <h2>No schools found for "{{ query }}"</h2>
+            <p>Try a different search term or <a href="{% url 'home' %}">view all schools</a>.</p>
+            {% else %}
+            <h2>No schools yet</h2>
+            <p>Schools added through the <a href="{% url 'admin_page' %}">admin panel</a> will appear here.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span class="brand-text">schola<strong>match</strong></span>
+                </div>
+
+                <div class="footer-columns">
+                    <div class="footer-col">
+                        <h3>About</h3>
+                        <ul>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Our mission</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Platform</h3>
+                        <ul>
+                            <li><a href="#">Schools</a></li>
+                            <li><a href="#">Compare Schools</a></li>
+                            <li><a href="#">How it works</a></li>
+                            <li><a href="#">Partner Portal</a></li>
+                            <li><a href="#">Success stories</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Information</h3>
+                        <ul>
+                            <li><a href="#">Contact us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of service</a></li>
+                            <li><a href="#">Data Transparency</a></li>
+                            <li><a href="#">Help center</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>Created by team &mdash; all rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ── Dark Mode Toggle ── */
+        const toggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        const icon = toggle.querySelector('i');
+
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+        });
+    </script>
+</body>
+
+</html>
