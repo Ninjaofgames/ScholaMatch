@@ -1,0 +1,3167 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict miHT50V8jNHMhmrgj3fGtKhG0zco5sB99g8YxiNYPQoyyL779dzRrfhF0SOP9MF
+
+-- Dumped from database version 16.11 (Ubuntu 16.11-0ubuntu0.24.04.1)
+-- Dumped by pg_dump version 18.0
+
+-- Started on 2026-03-15 01:50:29
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 8 (class 2615 OID 16396)
+-- Name: analytics; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA analytics;
+
+
+ALTER SCHEMA analytics OWNER TO postgres;
+
+--
+-- TOC entry 6 (class 2615 OID 16394)
+-- Name: auth; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA auth;
+
+
+ALTER SCHEMA auth OWNER TO postgres;
+
+--
+-- TOC entry 9 (class 2615 OID 16397)
+-- Name: school; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA school;
+
+
+ALTER SCHEMA school OWNER TO postgres;
+
+--
+-- TOC entry 7 (class 2615 OID 16395)
+-- Name: test; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA test;
+
+
+ALTER SCHEMA test OWNER TO postgres;
+
+--
+-- TOC entry 956 (class 1247 OID 16630)
+-- Name: polaritytype; Type: TYPE; Schema: analytics; Owner: badr
+--
+
+CREATE TYPE analytics.polaritytype AS ENUM (
+    'positive',
+    'negative',
+    'neutral'
+);
+
+
+ALTER TYPE analytics.polaritytype OWNER TO badr;
+
+--
+-- TOC entry 944 (class 1247 OID 16554)
+-- Name: sentimentlabel; Type: TYPE; Schema: analytics; Owner: badr
+--
+
+CREATE TYPE analytics.sentimentlabel AS ENUM (
+    'positive',
+    'negative',
+    'neutral'
+);
+
+
+ALTER TYPE analytics.sentimentlabel OWNER TO badr;
+
+--
+-- TOC entry 908 (class 1247 OID 16406)
+-- Name: role; Type: TYPE; Schema: auth; Owner: postgres
+--
+
+CREATE TYPE auth.role AS ENUM (
+    'admin',
+    'user'
+);
+
+
+ALTER TYPE auth.role OWNER TO postgres;
+
+--
+-- TOC entry 935 (class 1247 OID 16522)
+-- Name: educationlvl; Type: TYPE; Schema: school; Owner: badr
+--
+
+CREATE TYPE school.educationlvl AS ENUM (
+    'primary',
+    'secondary',
+    'high school',
+    'college'
+);
+
+
+ALTER TYPE school.educationlvl OWNER TO badr;
+
+--
+-- TOC entry 932 (class 1247 OID 16514)
+-- Name: financialtype; Type: TYPE; Schema: school; Owner: badr
+--
+
+CREATE TYPE school.financialtype AS ENUM (
+    'public',
+    'private',
+    'hybrid'
+);
+
+
+ALTER TYPE school.financialtype OWNER TO badr;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 243 (class 1259 OID 16638)
+-- Name: analysis; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.analysis (
+    id_analysis integer NOT NULL,
+    polarity analytics.polaritytype,
+    id_comment integer NOT NULL,
+    id_aspect integer NOT NULL
+);
+
+
+ALTER TABLE analytics.analysis OWNER TO badr;
+
+--
+-- TOC entry 242 (class 1259 OID 16637)
+-- Name: analysis_id_analysis_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+CREATE SEQUENCE analytics.analysis_id_analysis_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE analytics.analysis_id_analysis_seq OWNER TO badr;
+
+--
+-- TOC entry 3826 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: analysis_id_analysis_seq; Type: SEQUENCE OWNED BY; Schema: analytics; Owner: badr
+--
+
+ALTER SEQUENCE analytics.analysis_id_analysis_seq OWNED BY analytics.analysis.id_analysis;
+
+
+--
+-- TOC entry 239 (class 1259 OID 16616)
+-- Name: aspect; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.aspect (
+    id_aspect integer NOT NULL,
+    aspect_name character varying(150) NOT NULL
+);
+
+
+ALTER TABLE analytics.aspect OWNER TO badr;
+
+--
+-- TOC entry 238 (class 1259 OID 16615)
+-- Name: aspect_id_aspect_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+CREATE SEQUENCE analytics.aspect_id_aspect_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE analytics.aspect_id_aspect_seq OWNER TO badr;
+
+--
+-- TOC entry 3827 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: aspect_id_aspect_seq; Type: SEQUENCE OWNED BY; Schema: analytics; Owner: badr
+--
+
+ALTER SEQUENCE analytics.aspect_id_aspect_seq OWNED BY analytics.aspect.id_aspect;
+
+
+--
+-- TOC entry 271 (class 1259 OID 16841)
+-- Name: auth_group; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_group (
+    id integer NOT NULL,
+    name character varying(150) NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_group OWNER TO badr;
+
+--
+-- TOC entry 270 (class 1259 OID 16840)
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_group ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 273 (class 1259 OID 16849)
+-- Name: auth_group_permissions; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_group_permissions (
+    id bigint NOT NULL,
+    group_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_group_permissions OWNER TO badr;
+
+--
+-- TOC entry 272 (class 1259 OID 16848)
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_group_permissions ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_group_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 269 (class 1259 OID 16835)
+-- Name: auth_permission; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_permission (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    content_type_id integer NOT NULL,
+    codename character varying(100) NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_permission OWNER TO badr;
+
+--
+-- TOC entry 268 (class 1259 OID 16834)
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_permission ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_permission_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 275 (class 1259 OID 16855)
+-- Name: auth_user; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_user (
+    id integer NOT NULL,
+    password character varying(128) NOT NULL,
+    last_login timestamp with time zone,
+    is_superuser boolean NOT NULL,
+    username character varying(150) NOT NULL,
+    first_name character varying(150) NOT NULL,
+    last_name character varying(150) NOT NULL,
+    email character varying(254) NOT NULL,
+    is_staff boolean NOT NULL,
+    is_active boolean NOT NULL,
+    date_joined timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_user OWNER TO badr;
+
+--
+-- TOC entry 277 (class 1259 OID 16863)
+-- Name: auth_user_groups; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_user_groups (
+    id bigint NOT NULL,
+    user_id integer NOT NULL,
+    group_id integer NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_user_groups OWNER TO badr;
+
+--
+-- TOC entry 276 (class 1259 OID 16862)
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_user_groups ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_user_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 274 (class 1259 OID 16854)
+-- Name: auth_user_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_user ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 279 (class 1259 OID 16869)
+-- Name: auth_user_user_permissions; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.auth_user_user_permissions (
+    id bigint NOT NULL,
+    user_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE analytics.auth_user_user_permissions OWNER TO badr;
+
+--
+-- TOC entry 278 (class 1259 OID 16868)
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.auth_user_user_permissions ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.auth_user_user_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 283 (class 1259 OID 25167)
+-- Name: authtoken_token; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.authtoken_token (
+    key character varying(40) NOT NULL,
+    created timestamp with time zone NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE analytics.authtoken_token OWNER TO badr;
+
+--
+-- TOC entry 237 (class 1259 OID 16562)
+-- Name: comment; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.comment (
+    id_comment integer NOT NULL,
+    data_source character varying(255),
+    comment_date timestamp without time zone DEFAULT now(),
+    comment_content text NOT NULL,
+    sentiment_score double precision,
+    sentiment_label analytics.sentimentlabel
+);
+
+
+ALTER TABLE analytics.comment OWNER TO badr;
+
+--
+-- TOC entry 236 (class 1259 OID 16561)
+-- Name: comment_id_comment_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+CREATE SEQUENCE analytics.comment_id_comment_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE analytics.comment_id_comment_seq OWNER TO badr;
+
+--
+-- TOC entry 3828 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: comment_id_comment_seq; Type: SEQUENCE OWNED BY; Schema: analytics; Owner: badr
+--
+
+ALTER SEQUENCE analytics.comment_id_comment_seq OWNED BY analytics.comment.id_comment;
+
+
+--
+-- TOC entry 281 (class 1259 OID 16927)
+-- Name: django_admin_log; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.django_admin_log (
+    id integer NOT NULL,
+    action_time timestamp with time zone NOT NULL,
+    object_id text,
+    object_repr character varying(200) NOT NULL,
+    action_flag smallint NOT NULL,
+    change_message text NOT NULL,
+    content_type_id integer,
+    user_id integer NOT NULL,
+    CONSTRAINT django_admin_log_action_flag_check CHECK ((action_flag >= 0))
+);
+
+
+ALTER TABLE analytics.django_admin_log OWNER TO badr;
+
+--
+-- TOC entry 280 (class 1259 OID 16926)
+-- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.django_admin_log ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.django_admin_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 267 (class 1259 OID 16827)
+-- Name: django_content_type; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.django_content_type (
+    id integer NOT NULL,
+    app_label character varying(100) NOT NULL,
+    model character varying(100) NOT NULL
+);
+
+
+ALTER TABLE analytics.django_content_type OWNER TO badr;
+
+--
+-- TOC entry 266 (class 1259 OID 16826)
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.django_content_type ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.django_content_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 265 (class 1259 OID 16819)
+-- Name: django_migrations; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.django_migrations (
+    id bigint NOT NULL,
+    app character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    applied timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE analytics.django_migrations OWNER TO badr;
+
+--
+-- TOC entry 264 (class 1259 OID 16818)
+-- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE analytics.django_migrations ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME analytics.django_migrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 282 (class 1259 OID 16955)
+-- Name: django_session; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.django_session (
+    session_key character varying(40) NOT NULL,
+    session_data text NOT NULL,
+    expire_date timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE analytics.django_session OWNER TO badr;
+
+--
+-- TOC entry 241 (class 1259 OID 16623)
+-- Name: mot_cle; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.mot_cle (
+    id_mot_cle integer NOT NULL,
+    content character varying(50) NOT NULL,
+    id_school integer
+);
+
+
+ALTER TABLE analytics.mot_cle OWNER TO badr;
+
+--
+-- TOC entry 240 (class 1259 OID 16622)
+-- Name: mot_cle_id_mot_cle_seq; Type: SEQUENCE; Schema: analytics; Owner: badr
+--
+
+CREATE SEQUENCE analytics.mot_cle_id_mot_cle_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE analytics.mot_cle_id_mot_cle_seq OWNER TO badr;
+
+--
+-- TOC entry 3829 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: mot_cle_id_mot_cle_seq; Type: SEQUENCE OWNED BY; Schema: analytics; Owner: badr
+--
+
+ALTER SEQUENCE analytics.mot_cle_id_mot_cle_seq OWNED BY analytics.mot_cle.id_mot_cle;
+
+
+--
+-- TOC entry 244 (class 1259 OID 16659)
+-- Name: school_comment; Type: TABLE; Schema: analytics; Owner: badr
+--
+
+CREATE TABLE analytics.school_comment (
+    id_ecole integer NOT NULL,
+    id_comment integer NOT NULL
+);
+
+
+ALTER TABLE analytics.school_comment OWNER TO badr;
+
+--
+-- TOC entry 220 (class 1259 OID 16412)
+-- Name: user; Type: TABLE; Schema: auth; Owner: postgres
+--
+
+CREATE TABLE auth."user" (
+    id_user integer NOT NULL,
+    username character varying(100) NOT NULL,
+    password character varying(500) NOT NULL,
+    email character varying(150) NOT NULL,
+    role auth.role,
+    prenom character varying(100),
+    nom character varying(100),
+    is_verified boolean DEFAULT false,
+    verification_code character varying(6) DEFAULT ''::character varying,
+    created_at timestamp without time zone
+);
+
+
+ALTER TABLE auth."user" OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16411)
+-- Name: user_id_user_seq; Type: SEQUENCE; Schema: auth; Owner: postgres
+--
+
+CREATE SEQUENCE auth.user_id_user_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE auth.user_id_user_seq OWNER TO postgres;
+
+--
+-- TOC entry 3831 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: user_id_user_seq; Type: SEQUENCE OWNED BY; Schema: auth; Owner: postgres
+--
+
+ALTER SEQUENCE auth.user_id_user_seq OWNED BY auth."user".id_user;
+
+
+--
+-- TOC entry 252 (class 1259 OID 16695)
+-- Name: auth_group; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_group (
+    id integer NOT NULL,
+    name character varying(150) NOT NULL
+);
+
+
+ALTER TABLE public.auth_group OWNER TO badr;
+
+--
+-- TOC entry 251 (class 1259 OID 16694)
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_group ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 254 (class 1259 OID 16703)
+-- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_group_permissions (
+    id bigint NOT NULL,
+    group_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE public.auth_group_permissions OWNER TO badr;
+
+--
+-- TOC entry 253 (class 1259 OID 16702)
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_group_permissions ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_group_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 250 (class 1259 OID 16689)
+-- Name: auth_permission; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_permission (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    content_type_id integer NOT NULL,
+    codename character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.auth_permission OWNER TO badr;
+
+--
+-- TOC entry 249 (class 1259 OID 16688)
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_permission ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_permission_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 256 (class 1259 OID 16709)
+-- Name: auth_user; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_user (
+    id integer NOT NULL,
+    password character varying(128) NOT NULL,
+    last_login timestamp with time zone,
+    is_superuser boolean NOT NULL,
+    username character varying(150) NOT NULL,
+    first_name character varying(150) NOT NULL,
+    last_name character varying(150) NOT NULL,
+    email character varying(254) NOT NULL,
+    is_staff boolean NOT NULL,
+    is_active boolean NOT NULL,
+    date_joined timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE public.auth_user OWNER TO badr;
+
+--
+-- TOC entry 258 (class 1259 OID 16717)
+-- Name: auth_user_groups; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_user_groups (
+    id bigint NOT NULL,
+    user_id integer NOT NULL,
+    group_id integer NOT NULL
+);
+
+
+ALTER TABLE public.auth_user_groups OWNER TO badr;
+
+--
+-- TOC entry 257 (class 1259 OID 16716)
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_user_groups ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_user_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 255 (class 1259 OID 16708)
+-- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_user ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 260 (class 1259 OID 16723)
+-- Name: auth_user_user_permissions; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.auth_user_user_permissions (
+    id bigint NOT NULL,
+    user_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE public.auth_user_user_permissions OWNER TO badr;
+
+--
+-- TOC entry 259 (class 1259 OID 16722)
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.auth_user_user_permissions ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.auth_user_user_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 262 (class 1259 OID 16781)
+-- Name: django_admin_log; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.django_admin_log (
+    id integer NOT NULL,
+    action_time timestamp with time zone NOT NULL,
+    object_id text,
+    object_repr character varying(200) NOT NULL,
+    action_flag smallint NOT NULL,
+    change_message text NOT NULL,
+    content_type_id integer,
+    user_id integer NOT NULL,
+    CONSTRAINT django_admin_log_action_flag_check CHECK ((action_flag >= 0))
+);
+
+
+ALTER TABLE public.django_admin_log OWNER TO badr;
+
+--
+-- TOC entry 261 (class 1259 OID 16780)
+-- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.django_admin_log ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.django_admin_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 248 (class 1259 OID 16681)
+-- Name: django_content_type; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.django_content_type (
+    id integer NOT NULL,
+    app_label character varying(100) NOT NULL,
+    model character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.django_content_type OWNER TO badr;
+
+--
+-- TOC entry 247 (class 1259 OID 16680)
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.django_content_type ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.django_content_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 246 (class 1259 OID 16673)
+-- Name: django_migrations; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.django_migrations (
+    id bigint NOT NULL,
+    app character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    applied timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE public.django_migrations OWNER TO badr;
+
+--
+-- TOC entry 245 (class 1259 OID 16672)
+-- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: badr
+--
+
+ALTER TABLE public.django_migrations ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.django_migrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 263 (class 1259 OID 16809)
+-- Name: django_session; Type: TABLE; Schema: public; Owner: badr
+--
+
+CREATE TABLE public.django_session (
+    session_key character varying(40) NOT NULL,
+    session_data text NOT NULL,
+    expire_date timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE public.django_session OWNER TO badr;
+
+--
+-- TOC entry 234 (class 1259 OID 16532)
+-- Name: school; Type: TABLE; Schema: school; Owner: badr
+--
+
+CREATE TABLE school.school (
+    id_school integer NOT NULL,
+    school_name character varying(200) NOT NULL,
+    place character varying(500) NOT NULL,
+    image text,
+    financial_type school.financialtype NOT NULL,
+    education_type school.educationlvl NOT NULL,
+    university_name character varying(200),
+    teaching_language character varying(100) NOT NULL,
+    website_link text,
+    maps_link text,
+    phone_number character varying(50),
+    email character varying(150),
+    description text
+);
+
+
+ALTER TABLE school.school OWNER TO badr;
+
+--
+-- TOC entry 233 (class 1259 OID 16531)
+-- Name: school_id_school_seq; Type: SEQUENCE; Schema: school; Owner: badr
+--
+
+CREATE SEQUENCE school.school_id_school_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE school.school_id_school_seq OWNER TO badr;
+
+--
+-- TOC entry 3832 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: school_id_school_seq; Type: SEQUENCE OWNED BY; Schema: school; Owner: badr
+--
+
+ALTER SEQUENCE school.school_id_school_seq OWNED BY school.school.id_school;
+
+
+--
+-- TOC entry 235 (class 1259 OID 16540)
+-- Name: school_speciality; Type: TABLE; Schema: school; Owner: badr
+--
+
+CREATE TABLE school.school_speciality (
+    id_school integer NOT NULL,
+    id_speciality integer NOT NULL
+);
+
+
+ALTER TABLE school.school_speciality OWNER TO badr;
+
+--
+-- TOC entry 232 (class 1259 OID 16505)
+-- Name: speciality; Type: TABLE; Schema: school; Owner: postgres
+--
+
+CREATE TABLE school.speciality (
+    id_speciality integer NOT NULL,
+    speciality_name text NOT NULL
+);
+
+
+ALTER TABLE school.speciality OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 16504)
+-- Name: speciality_id_speciality_seq; Type: SEQUENCE; Schema: school; Owner: postgres
+--
+
+CREATE SEQUENCE school.speciality_id_speciality_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE school.speciality_id_speciality_seq OWNER TO postgres;
+
+--
+-- TOC entry 3833 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: speciality_id_speciality_seq; Type: SEQUENCE OWNED BY; Schema: school; Owner: postgres
+--
+
+ALTER SEQUENCE school.speciality_id_speciality_seq OWNED BY school.speciality.id_speciality;
+
+
+--
+-- TOC entry 226 (class 1259 OID 16451)
+-- Name: choice; Type: TABLE; Schema: test; Owner: postgres
+--
+
+CREATE TABLE test.choice (
+    id_choice integer NOT NULL,
+    content text NOT NULL,
+    id_question integer NOT NULL
+);
+
+
+ALTER TABLE test.choice OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16450)
+-- Name: choice_id_choice_seq; Type: SEQUENCE; Schema: test; Owner: postgres
+--
+
+CREATE SEQUENCE test.choice_id_choice_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE test.choice_id_choice_seq OWNER TO postgres;
+
+--
+-- TOC entry 3834 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: choice_id_choice_seq; Type: SEQUENCE OWNED BY; Schema: test; Owner: postgres
+--
+
+ALTER SEQUENCE test.choice_id_choice_seq OWNED BY test.choice.id_choice;
+
+
+--
+-- TOC entry 222 (class 1259 OID 16430)
+-- Name: personality_test; Type: TABLE; Schema: test; Owner: postgres
+--
+
+CREATE TABLE test.personality_test (
+    id_test integer NOT NULL,
+    criteria character varying(255)
+);
+
+
+ALTER TABLE test.personality_test OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16429)
+-- Name: personality_test_id_test_seq; Type: SEQUENCE; Schema: test; Owner: postgres
+--
+
+CREATE SEQUENCE test.personality_test_id_test_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE test.personality_test_id_test_seq OWNER TO postgres;
+
+--
+-- TOC entry 3835 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: personality_test_id_test_seq; Type: SEQUENCE OWNED BY; Schema: test; Owner: postgres
+--
+
+ALTER SEQUENCE test.personality_test_id_test_seq OWNED BY test.personality_test.id_test;
+
+
+--
+-- TOC entry 230 (class 1259 OID 16483)
+-- Name: response_test; Type: TABLE; Schema: test; Owner: postgres
+--
+
+CREATE TABLE test.response_test (
+    id_response integer NOT NULL,
+    id_session integer NOT NULL,
+    id_question integer NOT NULL,
+    id_choice integer NOT NULL
+);
+
+
+ALTER TABLE test.response_test OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 16482)
+-- Name: response_test_id_response_seq; Type: SEQUENCE; Schema: test; Owner: postgres
+--
+
+CREATE SEQUENCE test.response_test_id_response_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE test.response_test_id_response_seq OWNER TO postgres;
+
+--
+-- TOC entry 3836 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: response_test_id_response_seq; Type: SEQUENCE OWNED BY; Schema: test; Owner: postgres
+--
+
+ALTER SEQUENCE test.response_test_id_response_seq OWNED BY test.response_test.id_response;
+
+
+--
+-- TOC entry 228 (class 1259 OID 16465)
+-- Name: session_test; Type: TABLE; Schema: test; Owner: postgres
+--
+
+CREATE TABLE test.session_test (
+    id_session integer NOT NULL,
+    id_utilisateur integer NOT NULL,
+    id_test integer NOT NULL,
+    date date DEFAULT now()
+);
+
+
+ALTER TABLE test.session_test OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16464)
+-- Name: session_test_id_session_seq; Type: SEQUENCE; Schema: test; Owner: postgres
+--
+
+CREATE SEQUENCE test.session_test_id_session_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE test.session_test_id_session_seq OWNER TO postgres;
+
+--
+-- TOC entry 3837 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: session_test_id_session_seq; Type: SEQUENCE OWNED BY; Schema: test; Owner: postgres
+--
+
+ALTER SEQUENCE test.session_test_id_session_seq OWNED BY test.session_test.id_session;
+
+
+--
+-- TOC entry 224 (class 1259 OID 16437)
+-- Name: test_question; Type: TABLE; Schema: test; Owner: postgres
+--
+
+CREATE TABLE test.test_question (
+    id_question integer NOT NULL,
+    question_content text NOT NULL,
+    id_test integer NOT NULL
+);
+
+
+ALTER TABLE test.test_question OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16436)
+-- Name: test_question_id_question_seq; Type: SEQUENCE; Schema: test; Owner: postgres
+--
+
+CREATE SEQUENCE test.test_question_id_question_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE test.test_question_id_question_seq OWNER TO postgres;
+
+--
+-- TOC entry 3838 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: test_question_id_question_seq; Type: SEQUENCE OWNED BY; Schema: test; Owner: postgres
+--
+
+ALTER SEQUENCE test.test_question_id_question_seq OWNED BY test.test_question.id_question;
+
+
+--
+-- TOC entry 3448 (class 2604 OID 16641)
+-- Name: analysis id_analysis; Type: DEFAULT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.analysis ALTER COLUMN id_analysis SET DEFAULT nextval('analytics.analysis_id_analysis_seq'::regclass);
+
+
+--
+-- TOC entry 3446 (class 2604 OID 16619)
+-- Name: aspect id_aspect; Type: DEFAULT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.aspect ALTER COLUMN id_aspect SET DEFAULT nextval('analytics.aspect_id_aspect_seq'::regclass);
+
+
+--
+-- TOC entry 3444 (class 2604 OID 16565)
+-- Name: comment id_comment; Type: DEFAULT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.comment ALTER COLUMN id_comment SET DEFAULT nextval('analytics.comment_id_comment_seq'::regclass);
+
+
+--
+-- TOC entry 3447 (class 2604 OID 16626)
+-- Name: mot_cle id_mot_cle; Type: DEFAULT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.mot_cle ALTER COLUMN id_mot_cle SET DEFAULT nextval('analytics.mot_cle_id_mot_cle_seq'::regclass);
+
+
+--
+-- TOC entry 3433 (class 2604 OID 16415)
+-- Name: user id_user; Type: DEFAULT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth."user" ALTER COLUMN id_user SET DEFAULT nextval('auth.user_id_user_seq'::regclass);
+
+
+--
+-- TOC entry 3443 (class 2604 OID 16535)
+-- Name: school id_school; Type: DEFAULT; Schema: school; Owner: badr
+--
+
+ALTER TABLE ONLY school.school ALTER COLUMN id_school SET DEFAULT nextval('school.school_id_school_seq'::regclass);
+
+
+--
+-- TOC entry 3442 (class 2604 OID 16508)
+-- Name: speciality id_speciality; Type: DEFAULT; Schema: school; Owner: postgres
+--
+
+ALTER TABLE ONLY school.speciality ALTER COLUMN id_speciality SET DEFAULT nextval('school.speciality_id_speciality_seq'::regclass);
+
+
+--
+-- TOC entry 3438 (class 2604 OID 16454)
+-- Name: choice id_choice; Type: DEFAULT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.choice ALTER COLUMN id_choice SET DEFAULT nextval('test.choice_id_choice_seq'::regclass);
+
+
+--
+-- TOC entry 3436 (class 2604 OID 16433)
+-- Name: personality_test id_test; Type: DEFAULT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.personality_test ALTER COLUMN id_test SET DEFAULT nextval('test.personality_test_id_test_seq'::regclass);
+
+
+--
+-- TOC entry 3441 (class 2604 OID 16486)
+-- Name: response_test id_response; Type: DEFAULT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.response_test ALTER COLUMN id_response SET DEFAULT nextval('test.response_test_id_response_seq'::regclass);
+
+
+--
+-- TOC entry 3439 (class 2604 OID 16468)
+-- Name: session_test id_session; Type: DEFAULT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.session_test ALTER COLUMN id_session SET DEFAULT nextval('test.session_test_id_session_seq'::regclass);
+
+
+--
+-- TOC entry 3437 (class 2604 OID 16440)
+-- Name: test_question id_question; Type: DEFAULT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.test_question ALTER COLUMN id_question SET DEFAULT nextval('test.test_question_id_question_seq'::regclass);
+
+
+--
+-- TOC entry 3776 (class 0 OID 16638)
+-- Dependencies: 243
+-- Data for Name: analysis; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.analysis VALUES (1, 'negative', 15, 1);
+INSERT INTO analytics.analysis VALUES (2, 'positive', 15, 2);
+INSERT INTO analytics.analysis VALUES (3, 'positive', 16, 3);
+INSERT INTO analytics.analysis VALUES (4, 'positive', 16, 4);
+INSERT INTO analytics.analysis VALUES (5, 'negative', 16, 5);
+INSERT INTO analytics.analysis VALUES (6, 'neutral', 17, 6);
+INSERT INTO analytics.analysis VALUES (7, 'positive', 18, 7);
+INSERT INTO analytics.analysis VALUES (8, 'negative', 18, 8);
+INSERT INTO analytics.analysis VALUES (9, 'positive', 18, 9);
+INSERT INTO analytics.analysis VALUES (10, 'positive', 19, 10);
+INSERT INTO analytics.analysis VALUES (11, 'positive', 19, 11);
+INSERT INTO analytics.analysis VALUES (12, 'neutral', 20, 12);
+
+
+--
+-- TOC entry 3772 (class 0 OID 16616)
+-- Dependencies: 239
+-- Data for Name: aspect; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.aspect VALUES (1, 'Financial');
+INSERT INTO analytics.aspect VALUES (2, 'Pedagogy');
+INSERT INTO analytics.aspect VALUES (3, 'location');
+INSERT INTO analytics.aspect VALUES (4, 'teachers');
+INSERT INTO analytics.aspect VALUES (5, 'tuition fees');
+INSERT INTO analytics.aspect VALUES (6, 'Nothing');
+INSERT INTO analytics.aspect VALUES (7, '1');
+INSERT INTO analytics.aspect VALUES (8, '2');
+INSERT INTO analytics.aspect VALUES (9, '3');
+INSERT INTO analytics.aspect VALUES (10, 'campus');
+INSERT INTO analytics.aspect VALUES (11, 'place');
+INSERT INTO analytics.aspect VALUES (12, 'Test');
+
+
+--
+-- TOC entry 3804 (class 0 OID 16841)
+-- Dependencies: 271
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3806 (class 0 OID 16849)
+-- Dependencies: 273
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3802 (class 0 OID 16835)
+-- Dependencies: 269
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.auth_permission VALUES (1, 'Can add log entry', 1, 'add_logentry');
+INSERT INTO analytics.auth_permission VALUES (2, 'Can change log entry', 1, 'change_logentry');
+INSERT INTO analytics.auth_permission VALUES (3, 'Can delete log entry', 1, 'delete_logentry');
+INSERT INTO analytics.auth_permission VALUES (4, 'Can view log entry', 1, 'view_logentry');
+INSERT INTO analytics.auth_permission VALUES (5, 'Can add permission', 3, 'add_permission');
+INSERT INTO analytics.auth_permission VALUES (6, 'Can change permission', 3, 'change_permission');
+INSERT INTO analytics.auth_permission VALUES (7, 'Can delete permission', 3, 'delete_permission');
+INSERT INTO analytics.auth_permission VALUES (8, 'Can view permission', 3, 'view_permission');
+INSERT INTO analytics.auth_permission VALUES (9, 'Can add group', 2, 'add_group');
+INSERT INTO analytics.auth_permission VALUES (10, 'Can change group', 2, 'change_group');
+INSERT INTO analytics.auth_permission VALUES (11, 'Can delete group', 2, 'delete_group');
+INSERT INTO analytics.auth_permission VALUES (12, 'Can view group', 2, 'view_group');
+INSERT INTO analytics.auth_permission VALUES (13, 'Can add user', 4, 'add_user');
+INSERT INTO analytics.auth_permission VALUES (14, 'Can change user', 4, 'change_user');
+INSERT INTO analytics.auth_permission VALUES (15, 'Can delete user', 4, 'delete_user');
+INSERT INTO analytics.auth_permission VALUES (16, 'Can view user', 4, 'view_user');
+INSERT INTO analytics.auth_permission VALUES (17, 'Can add content type', 5, 'add_contenttype');
+INSERT INTO analytics.auth_permission VALUES (18, 'Can change content type', 5, 'change_contenttype');
+INSERT INTO analytics.auth_permission VALUES (19, 'Can delete content type', 5, 'delete_contenttype');
+INSERT INTO analytics.auth_permission VALUES (20, 'Can view content type', 5, 'view_contenttype');
+INSERT INTO analytics.auth_permission VALUES (21, 'Can add session', 6, 'add_session');
+INSERT INTO analytics.auth_permission VALUES (22, 'Can change session', 6, 'change_session');
+INSERT INTO analytics.auth_permission VALUES (23, 'Can delete session', 6, 'delete_session');
+INSERT INTO analytics.auth_permission VALUES (24, 'Can view session', 6, 'view_session');
+INSERT INTO analytics.auth_permission VALUES (25, 'Can add analysis', 7, 'add_analysis');
+INSERT INTO analytics.auth_permission VALUES (26, 'Can change analysis', 7, 'change_analysis');
+INSERT INTO analytics.auth_permission VALUES (27, 'Can delete analysis', 7, 'delete_analysis');
+INSERT INTO analytics.auth_permission VALUES (28, 'Can view analysis', 7, 'view_analysis');
+INSERT INTO analytics.auth_permission VALUES (29, 'Can add aspect', 8, 'add_aspect');
+INSERT INTO analytics.auth_permission VALUES (30, 'Can change aspect', 8, 'change_aspect');
+INSERT INTO analytics.auth_permission VALUES (31, 'Can delete aspect', 8, 'delete_aspect');
+INSERT INTO analytics.auth_permission VALUES (32, 'Can view aspect', 8, 'view_aspect');
+INSERT INTO analytics.auth_permission VALUES (33, 'Can add auth group', 9, 'add_authgroup');
+INSERT INTO analytics.auth_permission VALUES (34, 'Can change auth group', 9, 'change_authgroup');
+INSERT INTO analytics.auth_permission VALUES (35, 'Can delete auth group', 9, 'delete_authgroup');
+INSERT INTO analytics.auth_permission VALUES (36, 'Can view auth group', 9, 'view_authgroup');
+INSERT INTO analytics.auth_permission VALUES (37, 'Can add auth group permissions', 10, 'add_authgrouppermissions');
+INSERT INTO analytics.auth_permission VALUES (38, 'Can change auth group permissions', 10, 'change_authgrouppermissions');
+INSERT INTO analytics.auth_permission VALUES (39, 'Can delete auth group permissions', 10, 'delete_authgrouppermissions');
+INSERT INTO analytics.auth_permission VALUES (40, 'Can view auth group permissions', 10, 'view_authgrouppermissions');
+INSERT INTO analytics.auth_permission VALUES (41, 'Can add auth permission', 11, 'add_authpermission');
+INSERT INTO analytics.auth_permission VALUES (42, 'Can change auth permission', 11, 'change_authpermission');
+INSERT INTO analytics.auth_permission VALUES (43, 'Can delete auth permission', 11, 'delete_authpermission');
+INSERT INTO analytics.auth_permission VALUES (44, 'Can view auth permission', 11, 'view_authpermission');
+INSERT INTO analytics.auth_permission VALUES (45, 'Can add auth user', 12, 'add_authuser');
+INSERT INTO analytics.auth_permission VALUES (46, 'Can change auth user', 12, 'change_authuser');
+INSERT INTO analytics.auth_permission VALUES (47, 'Can delete auth user', 12, 'delete_authuser');
+INSERT INTO analytics.auth_permission VALUES (48, 'Can view auth user', 12, 'view_authuser');
+INSERT INTO analytics.auth_permission VALUES (49, 'Can add auth user groups', 13, 'add_authusergroups');
+INSERT INTO analytics.auth_permission VALUES (50, 'Can change auth user groups', 13, 'change_authusergroups');
+INSERT INTO analytics.auth_permission VALUES (51, 'Can delete auth user groups', 13, 'delete_authusergroups');
+INSERT INTO analytics.auth_permission VALUES (52, 'Can view auth user groups', 13, 'view_authusergroups');
+INSERT INTO analytics.auth_permission VALUES (53, 'Can add auth user user permissions', 14, 'add_authuseruserpermissions');
+INSERT INTO analytics.auth_permission VALUES (54, 'Can change auth user user permissions', 14, 'change_authuseruserpermissions');
+INSERT INTO analytics.auth_permission VALUES (55, 'Can delete auth user user permissions', 14, 'delete_authuseruserpermissions');
+INSERT INTO analytics.auth_permission VALUES (56, 'Can view auth user user permissions', 14, 'view_authuseruserpermissions');
+INSERT INTO analytics.auth_permission VALUES (57, 'Can add choice', 15, 'add_choice');
+INSERT INTO analytics.auth_permission VALUES (58, 'Can change choice', 15, 'change_choice');
+INSERT INTO analytics.auth_permission VALUES (59, 'Can delete choice', 15, 'delete_choice');
+INSERT INTO analytics.auth_permission VALUES (60, 'Can view choice', 15, 'view_choice');
+INSERT INTO analytics.auth_permission VALUES (61, 'Can add comment', 16, 'add_comment');
+INSERT INTO analytics.auth_permission VALUES (62, 'Can change comment', 16, 'change_comment');
+INSERT INTO analytics.auth_permission VALUES (63, 'Can delete comment', 16, 'delete_comment');
+INSERT INTO analytics.auth_permission VALUES (64, 'Can view comment', 16, 'view_comment');
+INSERT INTO analytics.auth_permission VALUES (65, 'Can add django admin log', 17, 'add_djangoadminlog');
+INSERT INTO analytics.auth_permission VALUES (66, 'Can change django admin log', 17, 'change_djangoadminlog');
+INSERT INTO analytics.auth_permission VALUES (67, 'Can delete django admin log', 17, 'delete_djangoadminlog');
+INSERT INTO analytics.auth_permission VALUES (68, 'Can view django admin log', 17, 'view_djangoadminlog');
+INSERT INTO analytics.auth_permission VALUES (69, 'Can add django content type', 18, 'add_djangocontenttype');
+INSERT INTO analytics.auth_permission VALUES (70, 'Can change django content type', 18, 'change_djangocontenttype');
+INSERT INTO analytics.auth_permission VALUES (71, 'Can delete django content type', 18, 'delete_djangocontenttype');
+INSERT INTO analytics.auth_permission VALUES (72, 'Can view django content type', 18, 'view_djangocontenttype');
+INSERT INTO analytics.auth_permission VALUES (73, 'Can add django migrations', 19, 'add_djangomigrations');
+INSERT INTO analytics.auth_permission VALUES (74, 'Can change django migrations', 19, 'change_djangomigrations');
+INSERT INTO analytics.auth_permission VALUES (75, 'Can delete django migrations', 19, 'delete_djangomigrations');
+INSERT INTO analytics.auth_permission VALUES (76, 'Can view django migrations', 19, 'view_djangomigrations');
+INSERT INTO analytics.auth_permission VALUES (77, 'Can add django session', 20, 'add_djangosession');
+INSERT INTO analytics.auth_permission VALUES (78, 'Can change django session', 20, 'change_djangosession');
+INSERT INTO analytics.auth_permission VALUES (79, 'Can delete django session', 20, 'delete_djangosession');
+INSERT INTO analytics.auth_permission VALUES (80, 'Can view django session', 20, 'view_djangosession');
+INSERT INTO analytics.auth_permission VALUES (81, 'Can add mot cle', 21, 'add_motcle');
+INSERT INTO analytics.auth_permission VALUES (82, 'Can change mot cle', 21, 'change_motcle');
+INSERT INTO analytics.auth_permission VALUES (83, 'Can delete mot cle', 21, 'delete_motcle');
+INSERT INTO analytics.auth_permission VALUES (84, 'Can view mot cle', 21, 'view_motcle');
+INSERT INTO analytics.auth_permission VALUES (85, 'Can add personality test', 22, 'add_personalitytest');
+INSERT INTO analytics.auth_permission VALUES (86, 'Can change personality test', 22, 'change_personalitytest');
+INSERT INTO analytics.auth_permission VALUES (87, 'Can delete personality test', 22, 'delete_personalitytest');
+INSERT INTO analytics.auth_permission VALUES (88, 'Can view personality test', 22, 'view_personalitytest');
+INSERT INTO analytics.auth_permission VALUES (89, 'Can add response test', 23, 'add_responsetest');
+INSERT INTO analytics.auth_permission VALUES (90, 'Can change response test', 23, 'change_responsetest');
+INSERT INTO analytics.auth_permission VALUES (91, 'Can delete response test', 23, 'delete_responsetest');
+INSERT INTO analytics.auth_permission VALUES (92, 'Can view response test', 23, 'view_responsetest');
+INSERT INTO analytics.auth_permission VALUES (93, 'Can add school', 24, 'add_school');
+INSERT INTO analytics.auth_permission VALUES (94, 'Can change school', 24, 'change_school');
+INSERT INTO analytics.auth_permission VALUES (95, 'Can delete school', 24, 'delete_school');
+INSERT INTO analytics.auth_permission VALUES (96, 'Can view school', 24, 'view_school');
+INSERT INTO analytics.auth_permission VALUES (97, 'Can add school comment', 25, 'add_schoolcomment');
+INSERT INTO analytics.auth_permission VALUES (98, 'Can change school comment', 25, 'change_schoolcomment');
+INSERT INTO analytics.auth_permission VALUES (99, 'Can delete school comment', 25, 'delete_schoolcomment');
+INSERT INTO analytics.auth_permission VALUES (100, 'Can view school comment', 25, 'view_schoolcomment');
+INSERT INTO analytics.auth_permission VALUES (101, 'Can add school speciality', 26, 'add_schoolspeciality');
+INSERT INTO analytics.auth_permission VALUES (102, 'Can change school speciality', 26, 'change_schoolspeciality');
+INSERT INTO analytics.auth_permission VALUES (103, 'Can delete school speciality', 26, 'delete_schoolspeciality');
+INSERT INTO analytics.auth_permission VALUES (104, 'Can view school speciality', 26, 'view_schoolspeciality');
+INSERT INTO analytics.auth_permission VALUES (105, 'Can add session test', 27, 'add_sessiontest');
+INSERT INTO analytics.auth_permission VALUES (106, 'Can change session test', 27, 'change_sessiontest');
+INSERT INTO analytics.auth_permission VALUES (107, 'Can delete session test', 27, 'delete_sessiontest');
+INSERT INTO analytics.auth_permission VALUES (108, 'Can view session test', 27, 'view_sessiontest');
+INSERT INTO analytics.auth_permission VALUES (109, 'Can add speciality', 28, 'add_speciality');
+INSERT INTO analytics.auth_permission VALUES (110, 'Can change speciality', 28, 'change_speciality');
+INSERT INTO analytics.auth_permission VALUES (111, 'Can delete speciality', 28, 'delete_speciality');
+INSERT INTO analytics.auth_permission VALUES (112, 'Can view speciality', 28, 'view_speciality');
+INSERT INTO analytics.auth_permission VALUES (113, 'Can add test question', 29, 'add_testquestion');
+INSERT INTO analytics.auth_permission VALUES (114, 'Can change test question', 29, 'change_testquestion');
+INSERT INTO analytics.auth_permission VALUES (115, 'Can delete test question', 29, 'delete_testquestion');
+INSERT INTO analytics.auth_permission VALUES (116, 'Can view test question', 29, 'view_testquestion');
+INSERT INTO analytics.auth_permission VALUES (117, 'Can add user', 30, 'add_user');
+INSERT INTO analytics.auth_permission VALUES (118, 'Can change user', 30, 'change_user');
+INSERT INTO analytics.auth_permission VALUES (119, 'Can delete user', 30, 'delete_user');
+INSERT INTO analytics.auth_permission VALUES (120, 'Can view user', 30, 'view_user');
+INSERT INTO analytics.auth_permission VALUES (121, 'Can add Token', 31, 'add_token');
+INSERT INTO analytics.auth_permission VALUES (122, 'Can change Token', 31, 'change_token');
+INSERT INTO analytics.auth_permission VALUES (123, 'Can delete Token', 31, 'delete_token');
+INSERT INTO analytics.auth_permission VALUES (124, 'Can view Token', 31, 'view_token');
+INSERT INTO analytics.auth_permission VALUES (125, 'Can add Token', 32, 'add_tokenproxy');
+INSERT INTO analytics.auth_permission VALUES (126, 'Can change Token', 32, 'change_tokenproxy');
+INSERT INTO analytics.auth_permission VALUES (127, 'Can delete Token', 32, 'delete_tokenproxy');
+INSERT INTO analytics.auth_permission VALUES (128, 'Can view Token', 32, 'view_tokenproxy');
+
+
+--
+-- TOC entry 3808 (class 0 OID 16855)
+-- Dependencies: 275
+-- Data for Name: auth_user; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3810 (class 0 OID 16863)
+-- Dependencies: 277
+-- Data for Name: auth_user_groups; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3812 (class 0 OID 16869)
+-- Dependencies: 279
+-- Data for Name: auth_user_user_permissions; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3816 (class 0 OID 25167)
+-- Dependencies: 283
+-- Data for Name: authtoken_token; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3770 (class 0 OID 16562)
+-- Dependencies: 237
+-- Data for Name: comment; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.comment VALUES (9, 'manual', '2026-02-28 14:16:43.662792', 'Hi!', 0, 'neutral');
+INSERT INTO analytics.comment VALUES (10, 'manual', '2026-02-28 14:50:17.542803', 'Hi!', 0, 'neutral');
+INSERT INTO analytics.comment VALUES (11, 'manual', '2026-02-28 14:50:41.333182', 'Hi!', 100, 'positive');
+INSERT INTO analytics.comment VALUES (12, 'manual', '2026-02-28 14:52:21.517308', 'Hi!', 99.99, 'positive');
+INSERT INTO analytics.comment VALUES (13, 'manual', NULL, 'Salam', 10, 'positive');
+INSERT INTO analytics.comment VALUES (14, 'manual', NULL, 'HI, test', 88, 'positive');
+INSERT INTO analytics.comment VALUES (15, 'manual', NULL, 'Excellent staff but too expensive', 0, 'neutral');
+INSERT INTO analytics.comment VALUES (16, 'manual', NULL, 'The school has a great location and the teachers are very helpful, but the tuition fees are too expensive.', 0.3333333333333333, 'positive');
+INSERT INTO analytics.comment VALUES (17, 'manual', NULL, 'Hello, test2', 0, 'neutral');
+INSERT INTO analytics.comment VALUES (18, 'manual', NULL, 'Hello, test3', 0.33, 'positive');
+INSERT INTO analytics.comment VALUES (19, 'manual', '2026-03-13 04:02:30.364232', 'Harvard has a beautiful campus full of eclectic buildings holding its various departments, classrooms, offices, museums, libraries, etc. It''s a great place to walk around, explore, marvel, sit, people watch...', 1, 'positive');
+INSERT INTO analytics.comment VALUES (20, 'manual', '2026-03-13 15:20:47.319764', 'Hi, test 04', 0, 'neutral');
+
+
+--
+-- TOC entry 3814 (class 0 OID 16927)
+-- Dependencies: 281
+-- Data for Name: django_admin_log; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3800 (class 0 OID 16827)
+-- Dependencies: 267
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.django_content_type VALUES (1, 'admin', 'logentry');
+INSERT INTO analytics.django_content_type VALUES (2, 'auth', 'group');
+INSERT INTO analytics.django_content_type VALUES (3, 'auth', 'permission');
+INSERT INTO analytics.django_content_type VALUES (4, 'auth', 'user');
+INSERT INTO analytics.django_content_type VALUES (5, 'contenttypes', 'contenttype');
+INSERT INTO analytics.django_content_type VALUES (6, 'sessions', 'session');
+INSERT INTO analytics.django_content_type VALUES (7, 'Admin', 'analysis');
+INSERT INTO analytics.django_content_type VALUES (8, 'Admin', 'aspect');
+INSERT INTO analytics.django_content_type VALUES (9, 'Admin', 'authgroup');
+INSERT INTO analytics.django_content_type VALUES (10, 'Admin', 'authgrouppermissions');
+INSERT INTO analytics.django_content_type VALUES (11, 'Admin', 'authpermission');
+INSERT INTO analytics.django_content_type VALUES (12, 'Admin', 'authuser');
+INSERT INTO analytics.django_content_type VALUES (13, 'Admin', 'authusergroups');
+INSERT INTO analytics.django_content_type VALUES (14, 'Admin', 'authuseruserpermissions');
+INSERT INTO analytics.django_content_type VALUES (15, 'Admin', 'choice');
+INSERT INTO analytics.django_content_type VALUES (16, 'Admin', 'comment');
+INSERT INTO analytics.django_content_type VALUES (17, 'Admin', 'djangoadminlog');
+INSERT INTO analytics.django_content_type VALUES (18, 'Admin', 'djangocontenttype');
+INSERT INTO analytics.django_content_type VALUES (19, 'Admin', 'djangomigrations');
+INSERT INTO analytics.django_content_type VALUES (20, 'Admin', 'djangosession');
+INSERT INTO analytics.django_content_type VALUES (21, 'Admin', 'motcle');
+INSERT INTO analytics.django_content_type VALUES (22, 'Admin', 'personalitytest');
+INSERT INTO analytics.django_content_type VALUES (23, 'Admin', 'responsetest');
+INSERT INTO analytics.django_content_type VALUES (24, 'Admin', 'school');
+INSERT INTO analytics.django_content_type VALUES (25, 'Admin', 'schoolcomment');
+INSERT INTO analytics.django_content_type VALUES (26, 'Admin', 'schoolspeciality');
+INSERT INTO analytics.django_content_type VALUES (27, 'Admin', 'sessiontest');
+INSERT INTO analytics.django_content_type VALUES (28, 'Admin', 'speciality');
+INSERT INTO analytics.django_content_type VALUES (29, 'Admin', 'testquestion');
+INSERT INTO analytics.django_content_type VALUES (30, 'Admin', 'user');
+INSERT INTO analytics.django_content_type VALUES (31, 'authtoken', 'token');
+INSERT INTO analytics.django_content_type VALUES (32, 'authtoken', 'tokenproxy');
+
+
+--
+-- TOC entry 3798 (class 0 OID 16819)
+-- Dependencies: 265
+-- Data for Name: django_migrations; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+INSERT INTO analytics.django_migrations VALUES (1, 'contenttypes', '0001_initial', '2026-02-27 12:11:27.553903+00');
+INSERT INTO analytics.django_migrations VALUES (2, 'auth', '0001_initial', '2026-02-27 12:11:27.879578+00');
+INSERT INTO analytics.django_migrations VALUES (3, 'admin', '0001_initial', '2026-02-27 12:11:27.930493+00');
+INSERT INTO analytics.django_migrations VALUES (4, 'admin', '0002_logentry_remove_auto_add', '2026-02-27 12:11:27.940768+00');
+INSERT INTO analytics.django_migrations VALUES (5, 'admin', '0003_logentry_add_action_flag_choices', '2026-02-27 12:11:27.961279+00');
+INSERT INTO analytics.django_migrations VALUES (6, 'contenttypes', '0002_remove_content_type_name', '2026-02-27 12:11:28.010932+00');
+INSERT INTO analytics.django_migrations VALUES (7, 'auth', '0002_alter_permission_name_max_length', '2026-02-27 12:11:28.035387+00');
+INSERT INTO analytics.django_migrations VALUES (8, 'auth', '0003_alter_user_email_max_length', '2026-02-27 12:11:28.072224+00');
+INSERT INTO analytics.django_migrations VALUES (9, 'auth', '0004_alter_user_username_opts', '2026-02-27 12:11:28.114901+00');
+INSERT INTO analytics.django_migrations VALUES (10, 'auth', '0005_alter_user_last_login_null', '2026-02-27 12:11:28.16238+00');
+INSERT INTO analytics.django_migrations VALUES (11, 'auth', '0006_require_contenttypes_0002', '2026-02-27 12:11:28.181745+00');
+INSERT INTO analytics.django_migrations VALUES (12, 'auth', '0007_alter_validators_add_error_messages', '2026-02-27 12:11:28.221381+00');
+INSERT INTO analytics.django_migrations VALUES (13, 'auth', '0008_alter_user_username_max_length', '2026-02-27 12:11:28.316355+00');
+INSERT INTO analytics.django_migrations VALUES (14, 'auth', '0009_alter_user_last_name_max_length', '2026-02-27 12:11:28.332755+00');
+INSERT INTO analytics.django_migrations VALUES (15, 'auth', '0010_alter_group_name_max_length', '2026-02-27 12:11:28.348926+00');
+INSERT INTO analytics.django_migrations VALUES (16, 'auth', '0011_update_proxy_permissions', '2026-02-27 12:11:28.360367+00');
+INSERT INTO analytics.django_migrations VALUES (17, 'auth', '0012_alter_user_first_name_max_length', '2026-02-27 12:11:28.380093+00');
+INSERT INTO analytics.django_migrations VALUES (18, 'sessions', '0001_initial', '2026-02-27 12:11:28.446118+00');
+INSERT INTO analytics.django_migrations VALUES (19, 'Admin', '0001_initial', '2026-02-27 12:36:36.138779+00');
+INSERT INTO analytics.django_migrations VALUES (20, 'authtoken', '0001_initial', '2026-03-13 13:43:59.357899+00');
+INSERT INTO analytics.django_migrations VALUES (21, 'authtoken', '0002_auto_20160226_1747', '2026-03-13 13:43:59.465007+00');
+INSERT INTO analytics.django_migrations VALUES (22, 'authtoken', '0003_tokenproxy', '2026-03-13 13:43:59.531065+00');
+INSERT INTO analytics.django_migrations VALUES (23, 'authtoken', '0004_alter_tokenproxy_options', '2026-03-13 13:43:59.594402+00');
+
+
+--
+-- TOC entry 3815 (class 0 OID 16955)
+-- Dependencies: 282
+-- Data for Name: django_session; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3774 (class 0 OID 16623)
+-- Dependencies: 241
+-- Data for Name: mot_cle; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3777 (class 0 OID 16659)
+-- Dependencies: 244
+-- Data for Name: school_comment; Type: TABLE DATA; Schema: analytics; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3753 (class 0 OID 16412)
+-- Dependencies: 220
+-- Data for Name: user; Type: TABLE DATA; Schema: auth; Owner: postgres
+--
+
+INSERT INTO auth."user" VALUES (59, 'badr.hassab06@gmail.com', 'pbkdf2_sha256$1200000$eJGHqwt0IHxF7C4YW3n3PI$gRZ7CdlDmgSjxZWp6pdfCRKPue0CgAvtnSEkwB6ioO8=', 'badr.hassab06@gmail.com', 'admin', 'Badr', 'Hassab', true, '', NULL);
+
+
+--
+-- TOC entry 3785 (class 0 OID 16695)
+-- Dependencies: 252
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3787 (class 0 OID 16703)
+-- Dependencies: 254
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3783 (class 0 OID 16689)
+-- Dependencies: 250
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+INSERT INTO public.auth_permission VALUES (1, 'Can add log entry', 1, 'add_logentry');
+INSERT INTO public.auth_permission VALUES (2, 'Can change log entry', 1, 'change_logentry');
+INSERT INTO public.auth_permission VALUES (3, 'Can delete log entry', 1, 'delete_logentry');
+INSERT INTO public.auth_permission VALUES (4, 'Can view log entry', 1, 'view_logentry');
+INSERT INTO public.auth_permission VALUES (5, 'Can add permission', 3, 'add_permission');
+INSERT INTO public.auth_permission VALUES (6, 'Can change permission', 3, 'change_permission');
+INSERT INTO public.auth_permission VALUES (7, 'Can delete permission', 3, 'delete_permission');
+INSERT INTO public.auth_permission VALUES (8, 'Can view permission', 3, 'view_permission');
+INSERT INTO public.auth_permission VALUES (9, 'Can add group', 2, 'add_group');
+INSERT INTO public.auth_permission VALUES (10, 'Can change group', 2, 'change_group');
+INSERT INTO public.auth_permission VALUES (11, 'Can delete group', 2, 'delete_group');
+INSERT INTO public.auth_permission VALUES (12, 'Can view group', 2, 'view_group');
+INSERT INTO public.auth_permission VALUES (13, 'Can add user', 4, 'add_user');
+INSERT INTO public.auth_permission VALUES (14, 'Can change user', 4, 'change_user');
+INSERT INTO public.auth_permission VALUES (15, 'Can delete user', 4, 'delete_user');
+INSERT INTO public.auth_permission VALUES (16, 'Can view user', 4, 'view_user');
+INSERT INTO public.auth_permission VALUES (17, 'Can add content type', 5, 'add_contenttype');
+INSERT INTO public.auth_permission VALUES (18, 'Can change content type', 5, 'change_contenttype');
+INSERT INTO public.auth_permission VALUES (19, 'Can delete content type', 5, 'delete_contenttype');
+INSERT INTO public.auth_permission VALUES (20, 'Can view content type', 5, 'view_contenttype');
+INSERT INTO public.auth_permission VALUES (21, 'Can add session', 6, 'add_session');
+INSERT INTO public.auth_permission VALUES (22, 'Can change session', 6, 'change_session');
+INSERT INTO public.auth_permission VALUES (23, 'Can delete session', 6, 'delete_session');
+INSERT INTO public.auth_permission VALUES (24, 'Can view session', 6, 'view_session');
+
+
+--
+-- TOC entry 3789 (class 0 OID 16709)
+-- Dependencies: 256
+-- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3791 (class 0 OID 16717)
+-- Dependencies: 258
+-- Data for Name: auth_user_groups; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3793 (class 0 OID 16723)
+-- Dependencies: 260
+-- Data for Name: auth_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3795 (class 0 OID 16781)
+-- Dependencies: 262
+-- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3781 (class 0 OID 16681)
+-- Dependencies: 248
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+INSERT INTO public.django_content_type VALUES (1, 'admin', 'logentry');
+INSERT INTO public.django_content_type VALUES (2, 'auth', 'group');
+INSERT INTO public.django_content_type VALUES (3, 'auth', 'permission');
+INSERT INTO public.django_content_type VALUES (4, 'auth', 'user');
+INSERT INTO public.django_content_type VALUES (5, 'contenttypes', 'contenttype');
+INSERT INTO public.django_content_type VALUES (6, 'sessions', 'session');
+
+
+--
+-- TOC entry 3779 (class 0 OID 16673)
+-- Dependencies: 246
+-- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+INSERT INTO public.django_migrations VALUES (1, 'contenttypes', '0001_initial', '2026-02-25 16:45:32.93735+00');
+INSERT INTO public.django_migrations VALUES (2, 'auth', '0001_initial', '2026-02-25 16:45:33.817525+00');
+INSERT INTO public.django_migrations VALUES (3, 'admin', '0001_initial', '2026-02-25 16:45:34.026278+00');
+INSERT INTO public.django_migrations VALUES (4, 'admin', '0002_logentry_remove_auto_add', '2026-02-25 16:45:34.051192+00');
+INSERT INTO public.django_migrations VALUES (5, 'admin', '0003_logentry_add_action_flag_choices', '2026-02-25 16:45:34.092802+00');
+INSERT INTO public.django_migrations VALUES (6, 'contenttypes', '0002_remove_content_type_name', '2026-02-25 16:45:34.168016+00');
+INSERT INTO public.django_migrations VALUES (7, 'auth', '0002_alter_permission_name_max_length', '2026-02-25 16:45:34.208915+00');
+INSERT INTO public.django_migrations VALUES (8, 'auth', '0003_alter_user_email_max_length', '2026-02-25 16:45:34.247322+00');
+INSERT INTO public.django_migrations VALUES (9, 'auth', '0004_alter_user_username_opts', '2026-02-25 16:45:34.284025+00');
+INSERT INTO public.django_migrations VALUES (10, 'auth', '0005_alter_user_last_login_null', '2026-02-25 16:45:34.323989+00');
+INSERT INTO public.django_migrations VALUES (11, 'auth', '0006_require_contenttypes_0002', '2026-02-25 16:45:34.344441+00');
+INSERT INTO public.django_migrations VALUES (12, 'auth', '0007_alter_validators_add_error_messages', '2026-02-25 16:45:34.369992+00');
+INSERT INTO public.django_migrations VALUES (13, 'auth', '0008_alter_user_username_max_length', '2026-02-25 16:45:34.456002+00');
+INSERT INTO public.django_migrations VALUES (14, 'auth', '0009_alter_user_last_name_max_length', '2026-02-25 16:45:34.490345+00');
+INSERT INTO public.django_migrations VALUES (15, 'auth', '0010_alter_group_name_max_length', '2026-02-25 16:45:34.539924+00');
+INSERT INTO public.django_migrations VALUES (16, 'auth', '0011_update_proxy_permissions', '2026-02-25 16:45:34.567886+00');
+INSERT INTO public.django_migrations VALUES (17, 'auth', '0012_alter_user_first_name_max_length', '2026-02-25 16:45:34.60759+00');
+INSERT INTO public.django_migrations VALUES (18, 'sessions', '0001_initial', '2026-02-25 16:45:34.830593+00');
+
+
+--
+-- TOC entry 3796 (class 0 OID 16809)
+-- Dependencies: 263
+-- Data for Name: django_session; Type: TABLE DATA; Schema: public; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3767 (class 0 OID 16532)
+-- Dependencies: 234
+-- Data for Name: school; Type: TABLE DATA; Schema: school; Owner: badr
+--
+
+INSERT INTO school.school VALUES (1, 'Test School', 'Casablanca', NULL, 'public', 'high school', NULL, 'French', NULL, NULL, NULL, NULL, NULL);
+
+
+--
+-- TOC entry 3768 (class 0 OID 16540)
+-- Dependencies: 235
+-- Data for Name: school_speciality; Type: TABLE DATA; Schema: school; Owner: badr
+--
+
+
+
+--
+-- TOC entry 3765 (class 0 OID 16505)
+-- Dependencies: 232
+-- Data for Name: speciality; Type: TABLE DATA; Schema: school; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3759 (class 0 OID 16451)
+-- Dependencies: 226
+-- Data for Name: choice; Type: TABLE DATA; Schema: test; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3755 (class 0 OID 16430)
+-- Dependencies: 222
+-- Data for Name: personality_test; Type: TABLE DATA; Schema: test; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3763 (class 0 OID 16483)
+-- Dependencies: 230
+-- Data for Name: response_test; Type: TABLE DATA; Schema: test; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3761 (class 0 OID 16465)
+-- Dependencies: 228
+-- Data for Name: session_test; Type: TABLE DATA; Schema: test; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3757 (class 0 OID 16437)
+-- Dependencies: 224
+-- Data for Name: test_question; Type: TABLE DATA; Schema: test; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 3839 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: analysis_id_analysis_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.analysis_id_analysis_seq', 12, true);
+
+
+--
+-- TOC entry 3840 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: aspect_id_aspect_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.aspect_id_aspect_seq', 12, true);
+
+
+--
+-- TOC entry 3841 (class 0 OID 0)
+-- Dependencies: 270
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_group_id_seq', 1, false);
+
+
+--
+-- TOC entry 3842 (class 0 OID 0)
+-- Dependencies: 272
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_group_permissions_id_seq', 1, false);
+
+
+--
+-- TOC entry 3843 (class 0 OID 0)
+-- Dependencies: 268
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_permission_id_seq', 128, true);
+
+
+--
+-- TOC entry 3844 (class 0 OID 0)
+-- Dependencies: 276
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_user_groups_id_seq', 1, false);
+
+
+--
+-- TOC entry 3845 (class 0 OID 0)
+-- Dependencies: 274
+-- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_user_id_seq', 1, false);
+
+
+--
+-- TOC entry 3846 (class 0 OID 0)
+-- Dependencies: 278
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.auth_user_user_permissions_id_seq', 1, false);
+
+
+--
+-- TOC entry 3847 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: comment_id_comment_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.comment_id_comment_seq', 20, true);
+
+
+--
+-- TOC entry 3848 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.django_admin_log_id_seq', 1, false);
+
+
+--
+-- TOC entry 3849 (class 0 OID 0)
+-- Dependencies: 266
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.django_content_type_id_seq', 32, true);
+
+
+--
+-- TOC entry 3850 (class 0 OID 0)
+-- Dependencies: 264
+-- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.django_migrations_id_seq', 23, true);
+
+
+--
+-- TOC entry 3851 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: mot_cle_id_mot_cle_seq; Type: SEQUENCE SET; Schema: analytics; Owner: badr
+--
+
+SELECT pg_catalog.setval('analytics.mot_cle_id_mot_cle_seq', 1, false);
+
+
+--
+-- TOC entry 3852 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: user_id_user_seq; Type: SEQUENCE SET; Schema: auth; Owner: postgres
+--
+
+SELECT pg_catalog.setval('auth.user_id_user_seq', 59, true);
+
+
+--
+-- TOC entry 3853 (class 0 OID 0)
+-- Dependencies: 251
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_group_id_seq', 1, false);
+
+
+--
+-- TOC entry 3854 (class 0 OID 0)
+-- Dependencies: 253
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
+
+
+--
+-- TOC entry 3855 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 24, true);
+
+
+--
+-- TOC entry 3856 (class 0 OID 0)
+-- Dependencies: 257
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_user_groups_id_seq', 1, false);
+
+
+--
+-- TOC entry 3857 (class 0 OID 0)
+-- Dependencies: 255
+-- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_user_id_seq', 1, false);
+
+
+--
+-- TOC entry 3858 (class 0 OID 0)
+-- Dependencies: 259
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.auth_user_user_permissions_id_seq', 1, false);
+
+
+--
+-- TOC entry 3859 (class 0 OID 0)
+-- Dependencies: 261
+-- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
+
+
+--
+-- TOC entry 3860 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 6, true);
+
+
+--
+-- TOC entry 3861 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: badr
+--
+
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 18, true);
+
+
+--
+-- TOC entry 3862 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: school_id_school_seq; Type: SEQUENCE SET; Schema: school; Owner: badr
+--
+
+SELECT pg_catalog.setval('school.school_id_school_seq', 1, true);
+
+
+--
+-- TOC entry 3863 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: speciality_id_speciality_seq; Type: SEQUENCE SET; Schema: school; Owner: postgres
+--
+
+SELECT pg_catalog.setval('school.speciality_id_speciality_seq', 1, false);
+
+
+--
+-- TOC entry 3864 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: choice_id_choice_seq; Type: SEQUENCE SET; Schema: test; Owner: postgres
+--
+
+SELECT pg_catalog.setval('test.choice_id_choice_seq', 1, false);
+
+
+--
+-- TOC entry 3865 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: personality_test_id_test_seq; Type: SEQUENCE SET; Schema: test; Owner: postgres
+--
+
+SELECT pg_catalog.setval('test.personality_test_id_test_seq', 1, false);
+
+
+--
+-- TOC entry 3866 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: response_test_id_response_seq; Type: SEQUENCE SET; Schema: test; Owner: postgres
+--
+
+SELECT pg_catalog.setval('test.response_test_id_response_seq', 1, false);
+
+
+--
+-- TOC entry 3867 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: session_test_id_session_seq; Type: SEQUENCE SET; Schema: test; Owner: postgres
+--
+
+SELECT pg_catalog.setval('test.session_test_id_session_seq', 1, false);
+
+
+--
+-- TOC entry 3868 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: test_question_id_question_seq; Type: SEQUENCE SET; Schema: test; Owner: postgres
+--
+
+SELECT pg_catalog.setval('test.test_question_id_question_seq', 1, false);
+
+
+--
+-- TOC entry 3476 (class 2606 OID 16643)
+-- Name: analysis analysis_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.analysis
+    ADD CONSTRAINT analysis_pkey PRIMARY KEY (id_analysis);
+
+
+--
+-- TOC entry 3472 (class 2606 OID 16621)
+-- Name: aspect aspect_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.aspect
+    ADD CONSTRAINT aspect_pkey PRIMARY KEY (id_aspect);
+
+
+--
+-- TOC entry 3537 (class 2606 OID 16953)
+-- Name: auth_group auth_group_name_key; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group
+    ADD CONSTRAINT auth_group_name_key UNIQUE (name);
+
+
+--
+-- TOC entry 3542 (class 2606 OID 16884)
+-- Name: auth_group_permissions auth_group_permissions_group_id_permission_id_0cd325b0_uniq; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_permission_id_0cd325b0_uniq UNIQUE (group_id, permission_id);
+
+
+--
+-- TOC entry 3545 (class 2606 OID 16853)
+-- Name: auth_group_permissions auth_group_permissions_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3539 (class 2606 OID 16845)
+-- Name: auth_group auth_group_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group
+    ADD CONSTRAINT auth_group_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3532 (class 2606 OID 16875)
+-- Name: auth_permission auth_permission_content_type_id_codename_01ab375a_uniq; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_codename_01ab375a_uniq UNIQUE (content_type_id, codename);
+
+
+--
+-- TOC entry 3534 (class 2606 OID 16839)
+-- Name: auth_permission auth_permission_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_permission
+    ADD CONSTRAINT auth_permission_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3553 (class 2606 OID 16867)
+-- Name: auth_user_groups auth_user_groups_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3556 (class 2606 OID 16899)
+-- Name: auth_user_groups auth_user_groups_user_id_group_id_94350c0c_uniq; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_group_id_94350c0c_uniq UNIQUE (user_id, group_id);
+
+
+--
+-- TOC entry 3547 (class 2606 OID 16859)
+-- Name: auth_user auth_user_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user
+    ADD CONSTRAINT auth_user_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3559 (class 2606 OID 16873)
+-- Name: auth_user_user_permissions auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3562 (class 2606 OID 16913)
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_permission_id_14a6b632_uniq; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_permission_id_14a6b632_uniq UNIQUE (user_id, permission_id);
+
+
+--
+-- TOC entry 3550 (class 2606 OID 16948)
+-- Name: auth_user auth_user_username_key; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user
+    ADD CONSTRAINT auth_user_username_key UNIQUE (username);
+
+
+--
+-- TOC entry 3573 (class 2606 OID 25171)
+-- Name: authtoken_token authtoken_token_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.authtoken_token
+    ADD CONSTRAINT authtoken_token_pkey PRIMARY KEY (key);
+
+
+--
+-- TOC entry 3575 (class 2606 OID 25173)
+-- Name: authtoken_token authtoken_token_user_id_key; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.authtoken_token
+    ADD CONSTRAINT authtoken_token_user_id_key UNIQUE (user_id);
+
+
+--
+-- TOC entry 3470 (class 2606 OID 16570)
+-- Name: comment comment_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.comment
+    ADD CONSTRAINT comment_pkey PRIMARY KEY (id_comment);
+
+
+--
+-- TOC entry 3565 (class 2606 OID 16934)
+-- Name: django_admin_log django_admin_log_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_admin_log
+    ADD CONSTRAINT django_admin_log_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3527 (class 2606 OID 16833)
+-- Name: django_content_type django_content_type_app_label_model_76bd3d3b_uniq; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_content_type
+    ADD CONSTRAINT django_content_type_app_label_model_76bd3d3b_uniq UNIQUE (app_label, model);
+
+
+--
+-- TOC entry 3529 (class 2606 OID 16831)
+-- Name: django_content_type django_content_type_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_content_type
+    ADD CONSTRAINT django_content_type_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3525 (class 2606 OID 16825)
+-- Name: django_migrations django_migrations_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_migrations
+    ADD CONSTRAINT django_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3569 (class 2606 OID 16961)
+-- Name: django_session django_session_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_session
+    ADD CONSTRAINT django_session_pkey PRIMARY KEY (session_key);
+
+
+--
+-- TOC entry 3474 (class 2606 OID 16628)
+-- Name: mot_cle mot_cle_pkey; Type: CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.mot_cle
+    ADD CONSTRAINT mot_cle_pkey PRIMARY KEY (id_mot_cle);
+
+
+--
+-- TOC entry 3452 (class 2606 OID 16421)
+-- Name: user user_email_key; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth."user"
+    ADD CONSTRAINT user_email_key UNIQUE (email);
+
+
+--
+-- TOC entry 3454 (class 2606 OID 16419)
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: auth; Owner: postgres
+--
+
+ALTER TABLE ONLY auth."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id_user);
+
+
+--
+-- TOC entry 3490 (class 2606 OID 16807)
+-- Name: auth_group auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group
+    ADD CONSTRAINT auth_group_name_key UNIQUE (name);
+
+
+--
+-- TOC entry 3495 (class 2606 OID 16738)
+-- Name: auth_group_permissions auth_group_permissions_group_id_permission_id_0cd325b0_uniq; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_permission_id_0cd325b0_uniq UNIQUE (group_id, permission_id);
+
+
+--
+-- TOC entry 3498 (class 2606 OID 16707)
+-- Name: auth_group_permissions auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3492 (class 2606 OID 16699)
+-- Name: auth_group auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group
+    ADD CONSTRAINT auth_group_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3485 (class 2606 OID 16729)
+-- Name: auth_permission auth_permission_content_type_id_codename_01ab375a_uniq; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_codename_01ab375a_uniq UNIQUE (content_type_id, codename);
+
+
+--
+-- TOC entry 3487 (class 2606 OID 16693)
+-- Name: auth_permission auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_permission
+    ADD CONSTRAINT auth_permission_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3506 (class 2606 OID 16721)
+-- Name: auth_user_groups auth_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3509 (class 2606 OID 16753)
+-- Name: auth_user_groups auth_user_groups_user_id_group_id_94350c0c_uniq; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_group_id_94350c0c_uniq UNIQUE (user_id, group_id);
+
+
+--
+-- TOC entry 3500 (class 2606 OID 16713)
+-- Name: auth_user auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user
+    ADD CONSTRAINT auth_user_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3512 (class 2606 OID 16727)
+-- Name: auth_user_user_permissions auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3515 (class 2606 OID 16767)
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_permission_id_14a6b632_uniq; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_permission_id_14a6b632_uniq UNIQUE (user_id, permission_id);
+
+
+--
+-- TOC entry 3503 (class 2606 OID 16802)
+-- Name: auth_user auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user
+    ADD CONSTRAINT auth_user_username_key UNIQUE (username);
+
+
+--
+-- TOC entry 3518 (class 2606 OID 16788)
+-- Name: django_admin_log django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_admin_log
+    ADD CONSTRAINT django_admin_log_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3480 (class 2606 OID 16687)
+-- Name: django_content_type django_content_type_app_label_model_76bd3d3b_uniq; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_content_type
+    ADD CONSTRAINT django_content_type_app_label_model_76bd3d3b_uniq UNIQUE (app_label, model);
+
+
+--
+-- TOC entry 3482 (class 2606 OID 16685)
+-- Name: django_content_type django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_content_type
+    ADD CONSTRAINT django_content_type_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3478 (class 2606 OID 16679)
+-- Name: django_migrations django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_migrations
+    ADD CONSTRAINT django_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3522 (class 2606 OID 16815)
+-- Name: django_session django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_session
+    ADD CONSTRAINT django_session_pkey PRIMARY KEY (session_key);
+
+
+--
+-- TOC entry 3468 (class 2606 OID 16539)
+-- Name: school school_pkey; Type: CONSTRAINT; Schema: school; Owner: badr
+--
+
+ALTER TABLE ONLY school.school
+    ADD CONSTRAINT school_pkey PRIMARY KEY (id_school);
+
+
+--
+-- TOC entry 3466 (class 2606 OID 16512)
+-- Name: speciality speciality_pkey; Type: CONSTRAINT; Schema: school; Owner: postgres
+--
+
+ALTER TABLE ONLY school.speciality
+    ADD CONSTRAINT speciality_pkey PRIMARY KEY (id_speciality);
+
+
+--
+-- TOC entry 3460 (class 2606 OID 16458)
+-- Name: choice choice_pkey; Type: CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.choice
+    ADD CONSTRAINT choice_pkey PRIMARY KEY (id_choice);
+
+
+--
+-- TOC entry 3456 (class 2606 OID 16435)
+-- Name: personality_test personality_test_pkey; Type: CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.personality_test
+    ADD CONSTRAINT personality_test_pkey PRIMARY KEY (id_test);
+
+
+--
+-- TOC entry 3464 (class 2606 OID 16488)
+-- Name: response_test response_test_pkey; Type: CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.response_test
+    ADD CONSTRAINT response_test_pkey PRIMARY KEY (id_response);
+
+
+--
+-- TOC entry 3462 (class 2606 OID 16471)
+-- Name: session_test session_test_pkey; Type: CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.session_test
+    ADD CONSTRAINT session_test_pkey PRIMARY KEY (id_session);
+
+
+--
+-- TOC entry 3458 (class 2606 OID 16444)
+-- Name: test_question test_question_pkey; Type: CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.test_question
+    ADD CONSTRAINT test_question_pkey PRIMARY KEY (id_question);
+
+
+--
+-- TOC entry 3535 (class 1259 OID 16954)
+-- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_group_name_a6ea08ec_like ON analytics.auth_group USING btree (name varchar_pattern_ops);
+
+
+--
+-- TOC entry 3540 (class 1259 OID 16895)
+-- Name: auth_group_permissions_group_id_b120cbf9; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_group_permissions_group_id_b120cbf9 ON analytics.auth_group_permissions USING btree (group_id);
+
+
+--
+-- TOC entry 3543 (class 1259 OID 16896)
+-- Name: auth_group_permissions_permission_id_84c5c92e; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_group_permissions_permission_id_84c5c92e ON analytics.auth_group_permissions USING btree (permission_id);
+
+
+--
+-- TOC entry 3530 (class 1259 OID 16881)
+-- Name: auth_permission_content_type_id_2f476e4b; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_permission_content_type_id_2f476e4b ON analytics.auth_permission USING btree (content_type_id);
+
+
+--
+-- TOC entry 3551 (class 1259 OID 16911)
+-- Name: auth_user_groups_group_id_97559544; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_user_groups_group_id_97559544 ON analytics.auth_user_groups USING btree (group_id);
+
+
+--
+-- TOC entry 3554 (class 1259 OID 16910)
+-- Name: auth_user_groups_user_id_6a12ed8b; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_user_groups_user_id_6a12ed8b ON analytics.auth_user_groups USING btree (user_id);
+
+
+--
+-- TOC entry 3557 (class 1259 OID 16925)
+-- Name: auth_user_user_permissions_permission_id_1fbb5f2c; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_user_user_permissions_permission_id_1fbb5f2c ON analytics.auth_user_user_permissions USING btree (permission_id);
+
+
+--
+-- TOC entry 3560 (class 1259 OID 16924)
+-- Name: auth_user_user_permissions_user_id_a95ead1b; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_user_user_permissions_user_id_a95ead1b ON analytics.auth_user_user_permissions USING btree (user_id);
+
+
+--
+-- TOC entry 3548 (class 1259 OID 16949)
+-- Name: auth_user_username_6821ab7c_like; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX auth_user_username_6821ab7c_like ON analytics.auth_user USING btree (username varchar_pattern_ops);
+
+
+--
+-- TOC entry 3571 (class 1259 OID 25179)
+-- Name: authtoken_token_key_10f0b77e_like; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX authtoken_token_key_10f0b77e_like ON analytics.authtoken_token USING btree (key varchar_pattern_ops);
+
+
+--
+-- TOC entry 3563 (class 1259 OID 16945)
+-- Name: django_admin_log_content_type_id_c4bce8eb; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX django_admin_log_content_type_id_c4bce8eb ON analytics.django_admin_log USING btree (content_type_id);
+
+
+--
+-- TOC entry 3566 (class 1259 OID 16946)
+-- Name: django_admin_log_user_id_c564eba6; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX django_admin_log_user_id_c564eba6 ON analytics.django_admin_log USING btree (user_id);
+
+
+--
+-- TOC entry 3567 (class 1259 OID 16963)
+-- Name: django_session_expire_date_a5c62663; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX django_session_expire_date_a5c62663 ON analytics.django_session USING btree (expire_date);
+
+
+--
+-- TOC entry 3570 (class 1259 OID 16962)
+-- Name: django_session_session_key_c0390e0f_like; Type: INDEX; Schema: analytics; Owner: badr
+--
+
+CREATE INDEX django_session_session_key_c0390e0f_like ON analytics.django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- TOC entry 3488 (class 1259 OID 16808)
+-- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_group_name_a6ea08ec_like ON public.auth_group USING btree (name varchar_pattern_ops);
+
+
+--
+-- TOC entry 3493 (class 1259 OID 16749)
+-- Name: auth_group_permissions_group_id_b120cbf9; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_group_permissions_group_id_b120cbf9 ON public.auth_group_permissions USING btree (group_id);
+
+
+--
+-- TOC entry 3496 (class 1259 OID 16750)
+-- Name: auth_group_permissions_permission_id_84c5c92e; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_group_permissions_permission_id_84c5c92e ON public.auth_group_permissions USING btree (permission_id);
+
+
+--
+-- TOC entry 3483 (class 1259 OID 16735)
+-- Name: auth_permission_content_type_id_2f476e4b; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_permission_content_type_id_2f476e4b ON public.auth_permission USING btree (content_type_id);
+
+
+--
+-- TOC entry 3504 (class 1259 OID 16765)
+-- Name: auth_user_groups_group_id_97559544; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_user_groups_group_id_97559544 ON public.auth_user_groups USING btree (group_id);
+
+
+--
+-- TOC entry 3507 (class 1259 OID 16764)
+-- Name: auth_user_groups_user_id_6a12ed8b; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_user_groups_user_id_6a12ed8b ON public.auth_user_groups USING btree (user_id);
+
+
+--
+-- TOC entry 3510 (class 1259 OID 16779)
+-- Name: auth_user_user_permissions_permission_id_1fbb5f2c; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_user_user_permissions_permission_id_1fbb5f2c ON public.auth_user_user_permissions USING btree (permission_id);
+
+
+--
+-- TOC entry 3513 (class 1259 OID 16778)
+-- Name: auth_user_user_permissions_user_id_a95ead1b; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_user_user_permissions_user_id_a95ead1b ON public.auth_user_user_permissions USING btree (user_id);
+
+
+--
+-- TOC entry 3501 (class 1259 OID 16803)
+-- Name: auth_user_username_6821ab7c_like; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX auth_user_username_6821ab7c_like ON public.auth_user USING btree (username varchar_pattern_ops);
+
+
+--
+-- TOC entry 3516 (class 1259 OID 16799)
+-- Name: django_admin_log_content_type_id_c4bce8eb; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX django_admin_log_content_type_id_c4bce8eb ON public.django_admin_log USING btree (content_type_id);
+
+
+--
+-- TOC entry 3519 (class 1259 OID 16800)
+-- Name: django_admin_log_user_id_c564eba6; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX django_admin_log_user_id_c564eba6 ON public.django_admin_log USING btree (user_id);
+
+
+--
+-- TOC entry 3520 (class 1259 OID 16817)
+-- Name: django_session_expire_date_a5c62663; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX django_session_expire_date_a5c62663 ON public.django_session USING btree (expire_date);
+
+
+--
+-- TOC entry 3523 (class 1259 OID 16816)
+-- Name: django_session_session_key_c0390e0f_like; Type: INDEX; Schema: public; Owner: badr
+--
+
+CREATE INDEX django_session_session_key_c0390e0f_like ON public.django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- TOC entry 3586 (class 2606 OID 16649)
+-- Name: analysis analysis_id_aspect_fkey; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.analysis
+    ADD CONSTRAINT analysis_id_aspect_fkey FOREIGN KEY (id_aspect) REFERENCES analytics.aspect(id_aspect) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3587 (class 2606 OID 16644)
+-- Name: analysis analysis_id_comment_fkey; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.analysis
+    ADD CONSTRAINT analysis_id_comment_fkey FOREIGN KEY (id_comment) REFERENCES analytics.comment(id_comment) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3600 (class 2606 OID 16890)
+-- Name: auth_group_permissions auth_group_permissio_permission_id_84c5c92e_fk_auth_perm; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissio_permission_id_84c5c92e_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES analytics.auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3601 (class 2606 OID 16885)
+-- Name: auth_group_permissions auth_group_permissions_group_id_b120cbf9_fk_auth_group_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_b120cbf9_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES analytics.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3599 (class 2606 OID 16876)
+-- Name: auth_permission auth_permission_content_type_id_2f476e4b_fk_django_co; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_2f476e4b_fk_django_co FOREIGN KEY (content_type_id) REFERENCES analytics.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3602 (class 2606 OID 16905)
+-- Name: auth_user_groups auth_user_groups_group_id_97559544_fk_auth_group_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_group_id_97559544_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES analytics.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3603 (class 2606 OID 16900)
+-- Name: auth_user_groups auth_user_groups_user_id_6a12ed8b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_6a12ed8b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES analytics.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3604 (class 2606 OID 16919)
+-- Name: auth_user_user_permissions auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES analytics.auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3605 (class 2606 OID 16914)
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES analytics.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3608 (class 2606 OID 25174)
+-- Name: authtoken_token authtoken_token_user_id_35299eff_fk_auth_user_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.authtoken_token
+    ADD CONSTRAINT authtoken_token_user_id_35299eff_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES analytics.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3606 (class 2606 OID 16935)
+-- Name: django_admin_log django_admin_log_content_type_id_c4bce8eb_fk_django_co; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_admin_log
+    ADD CONSTRAINT django_admin_log_content_type_id_c4bce8eb_fk_django_co FOREIGN KEY (content_type_id) REFERENCES analytics.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3607 (class 2606 OID 16940)
+-- Name: django_admin_log django_admin_log_user_id_c564eba6_fk_auth_user_id; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.django_admin_log
+    ADD CONSTRAINT django_admin_log_user_id_c564eba6_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES analytics.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3585 (class 2606 OID 16654)
+-- Name: mot_cle mot_cle_id_school_fkey; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.mot_cle
+    ADD CONSTRAINT mot_cle_id_school_fkey FOREIGN KEY (id_school) REFERENCES school.school(id_school) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3588 (class 2606 OID 16667)
+-- Name: school_comment school_comment_id_comment_fkey; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.school_comment
+    ADD CONSTRAINT school_comment_id_comment_fkey FOREIGN KEY (id_comment) REFERENCES analytics.comment(id_comment) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3589 (class 2606 OID 16662)
+-- Name: school_comment school_comment_id_ecole_fkey; Type: FK CONSTRAINT; Schema: analytics; Owner: badr
+--
+
+ALTER TABLE ONLY analytics.school_comment
+    ADD CONSTRAINT school_comment_id_ecole_fkey FOREIGN KEY (id_ecole) REFERENCES school.school(id_school) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3591 (class 2606 OID 16744)
+-- Name: auth_group_permissions auth_group_permissio_permission_id_84c5c92e_fk_auth_perm; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissio_permission_id_84c5c92e_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3592 (class 2606 OID 16739)
+-- Name: auth_group_permissions auth_group_permissions_group_id_b120cbf9_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_b120cbf9_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3590 (class 2606 OID 16730)
+-- Name: auth_permission auth_permission_content_type_id_2f476e4b_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_2f476e4b_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3593 (class 2606 OID 16759)
+-- Name: auth_user_groups auth_user_groups_group_id_97559544_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_group_id_97559544_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3594 (class 2606 OID 16754)
+-- Name: auth_user_groups auth_user_groups_user_id_6a12ed8b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_6a12ed8b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3595 (class 2606 OID 16773)
+-- Name: auth_user_user_permissions auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3596 (class 2606 OID 16768)
+-- Name: auth_user_user_permissions auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3597 (class 2606 OID 16789)
+-- Name: django_admin_log django_admin_log_content_type_id_c4bce8eb_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_admin_log
+    ADD CONSTRAINT django_admin_log_content_type_id_c4bce8eb_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3598 (class 2606 OID 16794)
+-- Name: django_admin_log django_admin_log_user_id_c564eba6_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: badr
+--
+
+ALTER TABLE ONLY public.django_admin_log
+    ADD CONSTRAINT django_admin_log_user_id_c564eba6_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- TOC entry 3583 (class 2606 OID 16543)
+-- Name: school_speciality school_speciality_id_school_fkey; Type: FK CONSTRAINT; Schema: school; Owner: badr
+--
+
+ALTER TABLE ONLY school.school_speciality
+    ADD CONSTRAINT school_speciality_id_school_fkey FOREIGN KEY (id_school) REFERENCES school.school(id_school) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3584 (class 2606 OID 16548)
+-- Name: school_speciality school_speciality_id_speciality_fkey; Type: FK CONSTRAINT; Schema: school; Owner: badr
+--
+
+ALTER TABLE ONLY school.school_speciality
+    ADD CONSTRAINT school_speciality_id_speciality_fkey FOREIGN KEY (id_speciality) REFERENCES school.speciality(id_speciality) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3577 (class 2606 OID 16459)
+-- Name: choice choice_id_question_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.choice
+    ADD CONSTRAINT choice_id_question_fkey FOREIGN KEY (id_question) REFERENCES test.test_question(id_question) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3580 (class 2606 OID 16499)
+-- Name: response_test response_test_id_choice_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.response_test
+    ADD CONSTRAINT response_test_id_choice_fkey FOREIGN KEY (id_choice) REFERENCES test.choice(id_choice) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3581 (class 2606 OID 16494)
+-- Name: response_test response_test_id_question_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.response_test
+    ADD CONSTRAINT response_test_id_question_fkey FOREIGN KEY (id_question) REFERENCES test.test_question(id_question) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3582 (class 2606 OID 16489)
+-- Name: response_test response_test_id_session_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.response_test
+    ADD CONSTRAINT response_test_id_session_fkey FOREIGN KEY (id_session) REFERENCES test.session_test(id_session) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3578 (class 2606 OID 16477)
+-- Name: session_test session_test_id_test_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.session_test
+    ADD CONSTRAINT session_test_id_test_fkey FOREIGN KEY (id_test) REFERENCES test.personality_test(id_test) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3579 (class 2606 OID 16472)
+-- Name: session_test session_test_id_utilisateur_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.session_test
+    ADD CONSTRAINT session_test_id_utilisateur_fkey FOREIGN KEY (id_utilisateur) REFERENCES auth."user"(id_user) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3576 (class 2606 OID 16445)
+-- Name: test_question test_question_id_test_fkey; Type: FK CONSTRAINT; Schema: test; Owner: postgres
+--
+
+ALTER TABLE ONLY test.test_question
+    ADD CONSTRAINT test_question_id_test_fkey FOREIGN KEY (id_test) REFERENCES test.personality_test(id_test) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3822 (class 0 OID 0)
+-- Dependencies: 8
+-- Name: SCHEMA analytics; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA analytics TO badr;
+
+
+--
+-- TOC entry 3823 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA auth; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA auth TO badr;
+
+
+--
+-- TOC entry 3824 (class 0 OID 0)
+-- Dependencies: 9
+-- Name: SCHEMA school; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA school TO badr;
+
+
+--
+-- TOC entry 3825 (class 0 OID 0)
+-- Dependencies: 7
+-- Name: SCHEMA test; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA test TO badr;
+
+
+--
+-- TOC entry 3830 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE "user"; Type: ACL; Schema: auth; Owner: postgres
+--
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE auth."user" TO badr;
+
+
+-- Completed on 2026-03-15 01:50:31
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict miHT50V8jNHMhmrgj3fGtKhG0zco5sB99g8YxiNYPQoyyL779dzRrfhF0SOP9MF
+

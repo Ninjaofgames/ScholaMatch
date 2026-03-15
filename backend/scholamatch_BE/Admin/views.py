@@ -6,8 +6,9 @@ from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from .email_renderer import send_html_email
 from django.contrib.auth.hashers import make_password, check_password
+from django.db.models import Count
 import random
-from .models import Comment, User, School
+from .models import Comment, User, School, Aspect, Analysis
 from .serializers import CommentSerializer
 import csv
 import io
@@ -160,16 +161,109 @@ class AdminLoginView(APIView):
             return Response({ 'detail': 'Invalid credentials' }, status=403)
         if user.role != 'admin':
             return Response({ 'detail': 'Unauthorized' }, status=403)
-        return Response({ 'success': True, 'token': f'admin-{user.id_user}', 'user': { 'email': user.email } })
+        return Response({ 
+            'success': True, 
+            'token': f'admin-{user.id_user}', 
+            'user': { 
+                'email': user.email,
+                'prenom': user.prenom,
+                'nom': user.nom,
+                'role': user.role,
+            } 
+        })
 
 class AdminDashboardView(APIView):
-    permission_classes = [IsAdminUser]
     def get(self, request):
-        return Response({ 'data': { 'admin': { 'email': request.user.email } } })
+        token = request.headers.get('Authorization', '').replace('Token ', '')
+        if not token.startswith('admin-'):
+            return Response({ 'detail': 'Unauthorized' }, status=403)
+        try:
+            user_id = token.replace('admin-', '')
+            user = User.objects.get(id_user=user_id, role='admin')
+        except User.DoesNotExist:
+            return Response({ 'detail': 'Unauthorized' }, status=403)
+        return Response({
+            'data': {
+                'admin': {
+                    'email': user.email,
+                    'prenom': user.prenom,
+                    'nom': user.nom,
+                    'role': user.role,
+                }
+            }
+        })
 
 @api_view(['GET'])
 def search_schools(request):
     query = request.GET.get('q', '')
     schools = School.objects.filter(school_name__icontains=query)[:10]
     data = [{ 'id': s.id_school, 'name': s.school_name} for s in schools]
+    return Response(data)
+
+@api_view(['GET'])
+def platformStats(request):
+    from .models import User, School, Comment, SessionTest
+    return Response({
+        'users': User.objects.count(),
+        'schools': School.objects.count(),
+        'comments': Comment.objects.count(),
+        'tests': SessionTest.objects.count(),
+    })
+
+@api_view(['GET'])
+def sentiment_stats(request):
+    positive = Comment.objects.filter(sentiment_label='positive').count()
+    neutral = Comment.objects.filter(sentiment_label='neutral').count()
+    negative = Comment.objects.filter(sentiment_label='negative').count()
+    return Response([
+        { 'name': 'Positive', 'value': positive },
+        { 'name': 'Neutral', 'value': neutral },
+        { 'name': 'Negative', 'value': negative },
+    ])
+
+@api_view(['GET'])
+def aspects_stats(request):
+    aspects = Aspect.objects.all()
+    data = []
+    for aspect in aspects:
+        positive = Analysis.objects.filter(id_aspect=aspect, polarity='positive').count()
+        neutral = Analysis.objects.filter(id_aspect=aspect, polarity='neutral').count()
+        negative = Analysis.objects.filter(id_aspect=aspect, polarity='negative').count()
+        if positive + neutral + negative > 0:
+            data.append({
+                'aspect': aspect.aspect_name,
+                'positive': positive,
+                'neutral': neutral,
+                'negative': negative,
+            })
+    return Response(data)
+
+@api_view(['GET'])
+def comments_week(request):
+    from django.db import connection
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+    
+    days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    today = timezone.now()
+    data = []
+    
+    with connection.cursor() as cursor:
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
+            cursor.execute(
+                "SELECT COUNT(*) FROM comment WHERE DATE(comment_date) = %s",
+                [day.date()]
+            )
+            count = cursor.fetchone()[0]
+            data.append({ 'date': days[day.weekday()], 'comments': count })
+    
+    return Response(data)
+
+@api_view(['GET'])
+def keywords_stats(request):
+    aspects = Analysis.objects.values('id_aspect__aspect_name').annotate(
+        count=Count('id_aspect')
+    ).order_by('-count')[:20]
+    data = [{ 'text': a['id_aspect__aspect_name'], 'size': a['count'] * 100 } for a in aspects]
     return Response(data)

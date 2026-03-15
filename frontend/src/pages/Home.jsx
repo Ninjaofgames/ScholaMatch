@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect, useRef } from "react";
 import './modelStyle.css';
 import './homestyle.css';
@@ -11,63 +11,31 @@ import {
     LineChart, Line
 } from "recharts";
 import cloud from "d3-cloud";
+import { useAdminAuth } from "../context/AdminAuthContext";
+
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 export default function Home(){
-    //Pie chart params
-    const sentimentDistribution = [
-        { name: "Positive", value: 65 },
-        { name: "Neutral", value: 20 },
-        { name: "Negative", value: 15 },
-    ];
     const COLORS = ["#4bb84b", "#5FC3DC", "#FF6B6B"];
-    //Bar chart params
-    const aspectsData = [
-        { aspect: "Infrastructure", positive: 45, neutral: 25, negative: 19 },
-        { aspect: "Teaching Quality", positive: 89, neutral: 30, negative: 15 },
-        { aspect: "Administration", positive: 30, neutral: 20, negative: 17 },
-        { aspect: "Environment", positive: 70, neutral: 25, negative: 17 },
-        { aspect: "Price", positive: 20, neutral: 15, negative: 10 },
-        { aspect: "Location", positive: 40, neutral: 22, negative: 16 },
-    ];
-    //Line chart: users over time params
-    const usersOverTime = [
-        { date: "Jan", users: 12 },
-        { date: "Feb", users: 19 },
-        { date: "Mar", users: 25 },
-        { date: "Apr", users: 31 },
-        { date: "May", users: 28 },
-        { date: "Jun", users: 42 },
-        { date: "Jul", users: 55 },
-        { date: "Aug", users: 48 },
-        { date: "Sep", users: 63 },
-        { date: "Oct", users: 71 },
-        { date: "Nov", users: 68 },
-        { date: "Dec", users: 89 },
-    ];
-    //Line chart: Comments during week params
-    const commentsActivity = [
-        { date: "Mon", comments: 20 },
-        { date: "Tue", comments: 35 },
-        { date: "Wed", comments: 28 },
-        { date: "Thu", comments: 52 },
-        { date: "Fri", comments: 41 },
-        { date: "Sat", comments: 63 },
-        { date: "Sun", comments: 48 },
-    ];
-    //Word Cloud params
-    const words = [
-        { text: "Infrastructure", size: 89 },
-        { text: "Teaching", size: 134 },
-        { text: "Administration", size: 67 },
-        { text: "Environment", size: 112 },
-        { text: "Price", size: 45 },
-        { text: "Location", size: 78 },
-        { text: "Staff", size: 95 },
-        { text: "Cleanliness", size: 55 },
-    ];
     const COLORS_CLOUD = ["#4bb84b", "#5FC3DC", "#FF6B6B", "white"];
     const svgRef = useRef(null);
-    useEffect(() => {
+        useEffect(() => {
+            document.title = "ScholaMatch - Dashboard"
+        }, []);
+        const { admin } = useAdminAuth();
+        const [stats, setStats] = useState({ users: 0, schools: 0, comments: 0, tests:0});
+        useEffect(() => {
+            axios.get(`${API_BASE_URL}/stats/`)
+            .then(res => setStats(res.data));
+        }, [])
+        const [sentimentDistribution, setSentiment] = useState([]);
+        const [aspectsData, setAspects] = useState([]);
+        const [commentsActivity, setComments] = useState([]);
+        const [usersOverTime, setUsersOverTime] = useState([]);
+        const [words, setWords] = useState([]);
+        //Word cloud settings
+        useEffect(() => {
+            if (words.length === 0) return;
             cloud()
                 .size([500, 300])
                 .words(words.map(w => ({ ...w })))
@@ -78,7 +46,6 @@ export default function Home(){
                     const svg = svgRef.current;
                     if (!svg) return;
                     svg.innerHTML = "";
-
                     output.forEach((word) => {
                         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         text.setAttribute("transform", `translate(${word.x + 250}, ${word.y + 150})`);
@@ -91,32 +58,38 @@ export default function Home(){
                     });
                 })
                 .start();
-        }, []);
+        }, [words]);
+
         useEffect(() => {
-            document.title = "ScholaMatch - Dashboard"
+            axios.get(`${API_BASE_URL}/stats/sentiment/`).then(res => setSentiment(res.data));
+            axios.get(`${API_BASE_URL}/stats/aspects/`).then(res => setAspects(res.data));
+            axios.get(`${API_BASE_URL}/stats/comments-week/`).then(res => setComments(res.data));
+            axios.get(`${API_BASE_URL}/stats/keywords/`).then(res => setWords(res.data));
+            axios.get(`${API_BASE_URL}/stats/users-growth/`).then(res => setUsersOverTime(res.data));
         }, []);
     return(
         <div className="profileMain">
             <h1 className="title">Dashboard</h1>
+            <h2 className="subtitle" style={{color: "white"}}>Hello again, {admin?.prenom} {admin?.nom}</h2>
             <div className="center">
                 <div className="manAdd">
                     <h3 className="h3">Platform Overview</h3>
                     <div className="mainStats">
                         <div className="oneStat">
                             <i class="fa-solid fa-user"></i>
-                            <h4 className="statTitle"><b>Total users:</b> 3</h4>
+                            <h4 className="statTitle"><b>Total users:</b> {stats.users}</h4>
                         </div>
                         <div className="oneStat">
                             <i class="fa-solid fa-school"></i>
-                            <h4 className="statTitle"><b>Total schools:</b> 3</h4>
+                            <h4 className="statTitle"><b>Total schools:</b> {stats.schools}</h4>
                         </div>
                         <div className="oneStat">
                             <i class="fa-solid fa-comment"></i>
-                            <h4 className="statTitle"><b>Total comments:</b> 3</h4>
+                            <h4 className="statTitle"><b>Total comments:</b> {stats.comments}</h4>
                         </div>
                         <div className="oneStat">
                             <i class="fa-solid fa-flask"></i>
-                            <h4 className="statTitle"><b>Total tests taken:</b> 3</h4>
+                            <h4 className="statTitle"><b>Total tests taken:</b> {stats.tests}</h4>
                         </div>
                     </div>
                 </div>

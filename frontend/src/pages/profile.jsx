@@ -5,8 +5,10 @@ import axios from "axios";
 import FooterComp from "../components/footer";
 import { data } from "react-router-dom";
 import {Pie, PieChart, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import { useAdminAuth } from "../context/AdminAuthContext";
 
 export default function Profile(){
+    const { admin } = useAdminAuth();
     useEffect(() => {
         document.title = "ScholaMatch - Profile"
     }, []);
@@ -30,8 +32,8 @@ export default function Profile(){
                             </div>
                         </div>
                         <div className="initInfo">    
-                            <h2 className="username">Manga dev.</h2>
-                            <h3 className="admin"><span className="role">Admin</span> • <span className="activityA" style={{color: '#4BB84B'}}>Active</span></h3>
+                            <h2 className="username">{admin?.prenom} {admin?.nom}</h2>
+                            <h3 className="admin"><span className="role" style={{textTransform: "uppercase"}}>{admin?.role}</span> • <span className="activityA" style={{color: '#4BB84B'}}>Active</span></h3>
                             <h3 className="admin"><b>Last login:</b> 3-3-2026</h3>
                         </div>
                     </div>
@@ -42,17 +44,17 @@ export default function Profile(){
                         <div className="pinfo">
                             <div>
                                 <label>First name</label>
-                                <input type="text" readOnly value={"Manga"}/>
+                                <input type="text" readOnly value={admin?.prenom || ''}/>
                             </div>
                             <div>
                                 <label>Last name</label>
-                                <input type="text" readOnly value={"dev."}/>
+                                <input type="text" readOnly value={admin?.nom || ''}/>
                             </div>
                         </div>
                         <div className="pinfo">
                             <div>
                                 <label>Email</label>
-                                <input type="text" readOnly value={"mangadev@example.com"}/>
+                                <input type="text" readOnly value={admin?.email || ''}/>
                             </div>
                             <div>
                                 <label>Phone number</label>
