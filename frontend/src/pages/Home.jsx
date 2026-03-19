@@ -4,7 +4,7 @@ import './modelStyle.css';
 import './homestyle.css';
 import axios from "axios";
 import FooterComp from "../components/footer";
-import { data } from "react-router-dom";
+
 import {
     PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
     BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -76,19 +76,19 @@ export default function Home(){
                     <h3 className="h3">Platform Overview</h3>
                     <div className="mainStats">
                         <div className="oneStat">
-                            <i class="fa-solid fa-user"></i>
+                            <i className="fa-solid fa-user"></i>
                             <h4 className="statTitle"><b>Total users:</b> {stats.users}</h4>
                         </div>
                         <div className="oneStat">
-                            <i class="fa-solid fa-school"></i>
+                            <i className="fa-solid fa-school"></i>
                             <h4 className="statTitle"><b>Total schools:</b> {stats.schools}</h4>
                         </div>
                         <div className="oneStat">
-                            <i class="fa-solid fa-comment"></i>
+                            <i className="fa-solid fa-comment"></i>
                             <h4 className="statTitle"><b>Total comments:</b> {stats.comments}</h4>
                         </div>
                         <div className="oneStat">
-                            <i class="fa-solid fa-flask"></i>
+                            <i className="fa-solid fa-flask"></i>
                             <h4 className="statTitle"><b>Total tests taken:</b> {stats.tests}</h4>
                         </div>
                     </div>

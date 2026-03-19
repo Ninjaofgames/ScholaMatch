@@ -8,9 +8,9 @@ API.interceptors.request.use((config) => {
   return config;
 });
 const TOKEN_KEY = 'scholamatch_token';
-export const getToken = () => localStorage.getItem(TOKEN_KEY);
-export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
-export const logout = () => localStorage.removeItem(TOKEN_KEY);
+export const getToken = () => sessionStorage.getItem(TOKEN_KEY);
+export const setToken = (token) => sessionStorage.setItem(TOKEN_KEY, token);
+export const logout = () => sessionStorage.removeItem(TOKEN_KEY);
 export const login = (credentials) =>
   API.post('/auth/login/', credentials).then((res) => res.data);
 export const register = (credentials) =>

@@ -33,7 +33,7 @@ export const UserAuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const data = await userAuthService.userLogin({ email, password });
     userAuthService.setUserToken(data.token);
-    localStorage.removeItem('scholamatch_admin_token');
+    sessionStorage.removeItem('scholamatch_admin_token');
     setUser(data.user);
     return data;
   };

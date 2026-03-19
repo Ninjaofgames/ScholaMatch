@@ -54,7 +54,7 @@
     gap: 5%;
 }
 
-.pinfo [type="text"], .pinfo input[type="number"]{
+.pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"]{
     width: 500px;
     padding: 12px;
     border: 2px solid #4BB84B;
@@ -65,13 +65,38 @@
     font-family: inherit;
     transition: all 0.3s ease;
     box-sizing: border-box;
+}
+
+input:not([readonly]){
+    cursor: text;
+}
+
+input[readonly]{
     cursor: not-allowed;
 }
 
-.pinfo label{
+.pinfo label, label{
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
     color: #E8EFF6;
 }
 
+.passwordForm{
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+.passwordForm.open {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.passwordForm.closed {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-15px);
+    pointer-events: none;
+}

@@ -266,6 +266,7 @@ class User(models.Model):
     nom = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(blank=True, null=True)
     verification_code = models.CharField(max_length=6, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         managed = False

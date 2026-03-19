@@ -12,7 +12,14 @@ export const useAdminAuth = () => {
 export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const refreshAdmin = async () => {
+      try {
+          const res = await adminAuthService.getAdminDashboard();
+          setAdmin(res.data?.admin);
+      } catch {
+          setAdmin(null);
+      }
+  };
   useEffect(() => {
     const init = async () => {
       const token = adminAuthService.getAdminToken();
@@ -33,7 +40,7 @@ export const AdminAuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const data = await adminAuthService.adminLogin({ email, password });
     adminAuthService.setAdminToken(data.token);
-    localStorage.removeItem('scholamatch_user_token');
+    sessionStorage.removeItem('scholamatch_user_token');
     setAdmin(data.user);
     return data;
   };
@@ -51,6 +58,7 @@ export const AdminAuthProvider = ({ children }) => {
         isAuthenticated: !!adminAuthService.getAdminToken(),
         login,
         logout,
+        refreshAdmin,
       }}
     >
       {children}

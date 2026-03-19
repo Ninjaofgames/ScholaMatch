@@ -10,10 +10,10 @@ API.interceptors.request.use((config) => {
   return config;
 });
 const TOKEN_KEY = 'scholamatch_admin_token';
-export const getAdminToken = () => localStorage.getItem(TOKEN_KEY);
-export const setAdminToken = (token) => localStorage.setItem(TOKEN_KEY, token);
-export const adminLogout = () => localStorage.removeItem(TOKEN_KEY);
+export const getAdminToken = () => sessionStorage.getItem(TOKEN_KEY);
+export const setAdminToken = (token) => sessionStorage.setItem(TOKEN_KEY, token);
+export const adminLogout = () => sessionStorage.removeItem(TOKEN_KEY);
 export const adminLogin = (credentials) => 
   API.post('/auth/admin/login/', credentials).then((res) => res.data);
 export const getAdminDashboard = () =>
-  API.get('/admin/dashboard').then((res) => res.data);
+  API.get('/admin/dashboard/').then((res) => res.data);

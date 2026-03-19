@@ -55,8 +55,13 @@ function NavItem({item, isActive, onClick}) {
 }
 
 function LogOut() {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        sessionStorage.removeItem('scholamatch_admin_token');
+        navigate('/adminLgin');
+    };
     return(
-        <div className="sidebar__logout" title="Logout">
+        <div className="sidebar__logout" title="Logout" onClick={handleLogout} style={{ cursor: 'pointer' }}>
             <i className="fa-solid fa-power-off"></i>
         </div>
     );

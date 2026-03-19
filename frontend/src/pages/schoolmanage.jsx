@@ -2,25 +2,114 @@ import React, { useState, useEffect } from "react";
 import './modelStyle.css';
 import axios from "axios";
 
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+// Defined outside of SchoolManagement to avoid re-mounting on every render
+function SearchDropdown({ query, onSearch, results, onSelect, selected, placeholder }) {
+    return (
+        <div className="formGroup school-search-container">
+            <label>School name</label>
+            <input
+                type="text"
+                placeholder={placeholder || "Search school..."}
+                value={query}
+                onChange={onSearch}
+                className="school-search-input"
+            />
+            {results.length > 0 && (
+                <div className="school-results-dropdown">
+                    {results.map(school => (
+                        <div
+                            key={school.id}
+                            className="school-result-item"
+                            onClick={() => onSelect(school)}
+                        >
+                            <i className="fa-solid fa-school"></i>
+                            <span>{school.name}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {selected && !results.length && (
+                <p className="selected-school-tip">✓ Selected: {selected.name}</p>
+            )}
+        </div>
+    );
+}
+
+const emptyForm = {
+    name: "", website_link: "", location: "", location_link: "",
+    mail: "", phone: "", funding_type: "", education_level: "",
+    teaching_language: "", teaching_language_other: "",
+    university_name: "", keywords: "", thumbnail: null,
+};
+
 export default function SchoolManagement(){
     // ── Add Form State ──
-    const [addForm, setAddForm] = useState({
-        name: "", website_link: "", location: "", location_link: "",
-        mail: "", phone: "", funding_type: "", education_level: "",
-        teaching_language: "", teaching_language_other: "",
-        university_name: "", keywords: "", thumbnail: null,
-    });
+    const [addForm, setAddForm] = useState({ ...emptyForm });
 
     // ── Modify Form State ──
-    const [modifyForm, setModifyForm] = useState({
-        name: "", website_link: "", location: "", location_link: "",
-        mail: "", phone: "", funding_type: "", education_level: "",
-        teaching_language: "", teaching_language_other: "",
-        university_name: "", keywords: "", thumbnail: null,
-    });
+    const [modifyForm, setModifyForm] = useState({ ...emptyForm });
 
-    const [searchId, setSearchId] = useState("");
-    const [deleteId, setDeleteId] = useState("");
+    // ── Search-by-name state (modify section) ──
+    const [modifyQuery, setModifyQuery] = useState("");
+    const [modifyResults, setModifyResults] = useState([]);
+    const [selectedModifySchool, setSelectedModifySchool] = useState(null);
+
+    // ── Search-by-name state (delete section) ──
+    const [deleteQuery, setDeleteQuery] = useState("");
+    const [deleteResults, setDeleteResults] = useState([]);
+    const [selectedDeleteSchool, setSelectedDeleteSchool] = useState(null);
+
+    // ── Search handlers ──
+    const handleModifySearch = async (e) => {
+        const q = e.target.value;
+        setModifyQuery(q);
+        setSelectedModifySchool(null);
+        if (q.length < 2) { setModifyResults([]); return; }
+        try {
+            const res = await axios.get(`${API_BASE_URL}/schools/search/?q=${encodeURIComponent(q)}`);
+            setModifyResults(res.data);
+        } catch { setModifyResults([]); }
+    };
+
+    const handleDeleteSearch = async (e) => {
+        const q = e.target.value;
+        setDeleteQuery(q);
+        setSelectedDeleteSchool(null);
+        if (q.length < 2) { setDeleteResults([]); return; }
+        try {
+            const res = await axios.get(`${API_BASE_URL}/schools/search/?q=${encodeURIComponent(q)}`);
+            setDeleteResults(res.data);
+        } catch { setDeleteResults([]); }
+    };
+
+    const selectModifySchool = (school) => {
+        setSelectedModifySchool(school);
+        setModifyQuery(school.name);
+        setModifyResults([]);
+        setModifyForm({
+            name: school.name || "",
+            website_link: school.website_link || "",
+            location: school.location || "",
+            location_link: school.location_link || "",
+            mail: school.mail || "",
+            phone: school.phone || "",
+            funding_type: school.funding_type || "",
+            education_level: school.education_level || "",
+            teaching_language: school.teaching_language || "",
+            teaching_language_other: "",
+            university_name: school.university_name || "",
+            keywords: "",
+            thumbnail: null,
+        });
+    };
+
+    const selectDeleteSchool = (school) => {
+        setSelectedDeleteSchool(school);
+        setDeleteQuery(school.name);
+        setDeleteResults([]);
+    };
 
     // ── Handlers ──
     const handleDrop = (e, setter, form) => {
@@ -33,54 +122,28 @@ export default function SchoolManagement(){
 
     const handleAddSubmit = async () => {
         try {
-            const formData = new FormData();
-            Object.entries(addForm).forEach(([key, val]) => {
-                if (val !== null && val !== "") formData.append(key, val);
-            });
-            await axios.post("http://127.0.0.1:8000/api/schools/", formData);
+            const data = { ...addForm };
+            if (data.teaching_language === 'other') {
+                data.teaching_language_other = data.teaching_language_other;
+            }
+            delete data.thumbnail;
+            await axios.post(`${API_BASE_URL}/schools/create/`, data);
             alert("School added successfully!");
-            setAddForm({
-                name: "", website_link: "", location: "", location_link: "",
-                mail: "", phone: "", funding_type: "", education_level: "",
-                teaching_language: "", teaching_language_other: "",
-                university_name: "", keywords: "", thumbnail: null,
-            });
+            setAddForm({ ...emptyForm });
         } catch (error) {
             alert("Error adding school: " + (error.response?.data?.error || "Unknown error"));
         }
     };
 
-    const handleSearch = async () => {
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/schools/${searchId}/`);
-            const school = response.data;
-            setModifyForm({
-                name: school.name || "",
-                website_link: school.website_link || "",
-                location: school.location || "",
-                location_link: school.location_link || "",
-                mail: school.mail || "",
-                phone: school.phone || "",
-                funding_type: school.funding_type || "",
-                education_level: school.education_level || "",
-                teaching_language: school.teaching_language || "",
-                teaching_language_other: school.teaching_language_other || "",
-                university_name: school.university_name || "",
-                keywords: school.keywords || "",
-                thumbnail: null,
-            });
-        } catch (error) {
-            alert("School not found: " + (error.response?.data?.error || "Unknown error"));
-        }
-    };
-
     const handleModifySubmit = async () => {
+        if (!selectedModifySchool) {
+            alert("Please search and select a school first.");
+            return;
+        }
         try {
-            const formData = new FormData();
-            Object.entries(modifyForm).forEach(([key, val]) => {
-                if (val !== null && val !== "") formData.append(key, val);
-            });
-            await axios.put(`http://127.0.0.1:8000/api/schools/${searchId}/`, formData);
+            const data = { ...modifyForm };
+            delete data.thumbnail;
+            await axios.put(`${API_BASE_URL}/schools/${selectedModifySchool.id}/update/`, data);
             alert("School updated successfully!");
         } catch (error) {
             alert("Error updating school: " + (error.response?.data?.error || "Unknown error"));
@@ -88,17 +151,26 @@ export default function SchoolManagement(){
     };
 
     const handleDeleteSubmit = async () => {
+        if (!selectedDeleteSchool) {
+            alert("Please search and select a school first.");
+            return;
+        }
+        if (!window.confirm(`Are you sure you want to delete "${selectedDeleteSchool.name}"?`)) return;
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/schools/${deleteId}/`);
+            await axios.delete(`${API_BASE_URL}/schools/${selectedDeleteSchool.id}/delete/`);
             alert("School deleted successfully!");
-            setDeleteId("");
+            setDeleteQuery("");
+            setSelectedDeleteSchool(null);
         } catch (error) {
             alert("Error deleting school: " + (error.response?.data?.error || "Unknown error"));
         }
     };
+
     useEffect(() => {
         document.title = "ScholaMatch - School Management"
     }, []);
+
+
     return (
         <div className="modelMain">
             <h1 className="title">School Management</h1>
@@ -242,152 +314,167 @@ export default function SchoolManagement(){
                         </form>
                     </div>
                 </div>
+
+                {/* ════════════════ MODIFY SCHOOL ════════════════ */}
                 <h2 className="subtitle">Modify a school</h2>
                 <div className="manAdd schoolSection">
-                    <h3 className="h3">Search by ID</h3>
-                    <div className="searchBar">
-                        <div className="formGroup" style={{ flex: 1 }}>
-                            <input type="text" placeholder="Enter school ID" value={searchId} onChange={(e) => setSearchId(e.target.value)} />
-                        </div>
-                        <button type="button" onClick={handleSearch}>Search</button>
-                    </div>
+                    <h3 className="h3">Search school</h3>
+                    <SearchDropdown
+                        query={modifyQuery}
+                        onSearch={handleModifySearch}
+                        results={modifyResults}
+                        onSelect={selectModifySchool}
+                        selected={selectedModifySchool}
+                        placeholder="Search school to modify..."
+                    />
 
-                    <h3 className="h3">Update thumbnail</h3>
-                    <div
-                        className="dropArea"
-                        onDrop={(e) => handleDrop(e, setModifyForm, modifyForm)}
-                        onDragOver={(e) => e.preventDefault()}
-                    >
-                        <div className="otherDrop">
-                            <i className="fa-solid fa-image"></i>
-                            <button
-                                className="uploadBtn"
-                                type="button"
-                                onClick={() => document.getElementById("thumbnail_modify").click()}
+                    {selectedModifySchool && (
+                        <>
+                            <h3 className="h3">Update thumbnail</h3>
+                            <div
+                                className="dropArea"
+                                onDrop={(e) => handleDrop(e, setModifyForm, modifyForm)}
+                                onDragOver={(e) => e.preventDefault()}
                             >
-                                UPLOAD
-                            </button>
-                            <input
-                                id="thumbnail_modify"
-                                type="file"
-                                accept="image/png,image/jpeg,image/jpg,image/gif"
-                                style={{ display: "none" }}
-                                onChange={(e) => setModifyForm({ ...modifyForm, thumbnail: e.target.files[0] })}
-                            />
-                            <p>{modifyForm.thumbnail ? `✓ ${modifyForm.thumbnail.name}` : "Drop your image here, or click to browse"}</p>
-                        </div>
-                    </div>
+                                <div className="otherDrop">
+                                    <i className="fa-solid fa-image"></i>
+                                    <button
+                                        className="uploadBtn"
+                                        type="button"
+                                        onClick={() => document.getElementById("thumbnail_modify").click()}
+                                    >
+                                        UPLOAD
+                                    </button>
+                                    <input
+                                        id="thumbnail_modify"
+                                        type="file"
+                                        accept="image/png,image/jpeg,image/jpg,image/gif"
+                                        style={{ display: "none" }}
+                                        onChange={(e) => setModifyForm({ ...modifyForm, thumbnail: e.target.files[0] })}
+                                    />
+                                    <p>{modifyForm.thumbnail ? `✓ ${modifyForm.thumbnail.name}` : "Drop your image here, or click to browse"}</p>
+                                </div>
+                            </div>
 
-                    <h3 className="h3">School information</h3>
-                    <form onSubmit={(e) => { e.preventDefault(); handleModifySubmit(); }}>
-                        <div className="formRow">
-                            {["name", "website_link", "location", "location_link", "mail", "phone"].reduce((rows, field, i) => {
-                                if (i % 2 === 0) rows.push([]);
-                                rows[rows.length - 1].push(field);
-                                return rows;
-                            }, []).map((pair, idx) => (
-                                <React.Fragment key={idx}>
-                                    {pair.map((field) => (
-                                        <div className="formGroup" key={field}>
-                                            <label>{field.replace(/_/g, " ")}</label>
-                                            <input
-                                                type="text"
-                                                value={modifyForm[field]}
-                                                onChange={(e) => setModifyForm({ ...modifyForm, [field]: e.target.value })}
-                                            />
-                                        </div>
+                            <h3 className="h3">School information</h3>
+                            <form onSubmit={(e) => { e.preventDefault(); handleModifySubmit(); }}>
+                                <div className="formRow">
+                                    {["name", "website_link", "location", "location_link", "mail", "phone"].reduce((rows, field, i) => {
+                                        if (i % 2 === 0) rows.push([]);
+                                        rows[rows.length - 1].push(field);
+                                        return rows;
+                                    }, []).map((pair, idx) => (
+                                        <React.Fragment key={idx}>
+                                            {pair.map((field) => (
+                                                <div className="formGroup" key={field}>
+                                                    <label>{field.replace(/_/g, " ")}</label>
+                                                    <input
+                                                        type="text"
+                                                        value={modifyForm[field]}
+                                                        onChange={(e) => setModifyForm({ ...modifyForm, [field]: e.target.value })}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </React.Fragment>
                                     ))}
-                                </React.Fragment>
-                            ))}
-                        </div>
+                                </div>
 
-                        <div className="formGroup">
-                            <label>Funding type</label>
-                            <div className="radioGroup">
-                                {["public", "private", "semi-public"].map((val) => (
-                                    <label key={val}>
+                                <div className="formGroup">
+                                    <label>Funding type</label>
+                                    <div className="radioGroup">
+                                        {["public", "private", "semi-public"].map((val) => (
+                                            <label key={val}>
+                                                <input
+                                                    type="radio"
+                                                    value={val}
+                                                    checked={modifyForm.funding_type === val}
+                                                    onChange={(e) => setModifyForm({ ...modifyForm, funding_type: e.target.value })}
+                                                />
+                                                <span className="radioLabel">{val}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="formGroup">
+                                    <label>Education level</label>
+                                    <div className="radioGroup">
+                                        {["primary", "middle", "high", "college"].map((val) => (
+                                            <label key={val}>
+                                                <input
+                                                    type="radio"
+                                                    value={val}
+                                                    checked={modifyForm.education_level === val}
+                                                    onChange={(e) => setModifyForm({ ...modifyForm, education_level: e.target.value })}
+                                                />
+                                                <span className="radioLabel">{val}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="formGroup">
+                                    <label>Teaching language</label>
+                                    <div className="radioGroup">
+                                        {["bilingual", "arabic", "french", "english", "other"].map((val) => (
+                                            <label key={val}>
+                                                <input
+                                                    type="radio"
+                                                    value={val}
+                                                    checked={modifyForm.teaching_language === val}
+                                                    onChange={(e) => setModifyForm({ ...modifyForm, teaching_language: e.target.value })}
+                                                />
+                                                <span className="radioLabel">{val}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    {modifyForm.teaching_language === "other" && (
                                         <input
-                                            type="radio"
-                                            value={val}
-                                            checked={modifyForm.funding_type === val}
-                                            onChange={(e) => setModifyForm({ ...modifyForm, funding_type: e.target.value })}
+                                            type="text"
+                                            placeholder="Specify language"
+                                            value={modifyForm.teaching_language_other}
+                                            onChange={(e) => setModifyForm({ ...modifyForm, teaching_language_other: e.target.value })}
+                                            style={{ marginTop: "10px" }}
                                         />
-                                        <span className="radioLabel">{val}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
+                                    )}
+                                </div>
 
-                        <div className="formGroup">
-                            <label>Education level</label>
-                            <div className="radioGroup">
-                                {["primary", "middle", "high", "college"].map((val) => (
-                                    <label key={val}>
-                                        <input
-                                            type="radio"
-                                            value={val}
-                                            checked={modifyForm.education_level === val}
-                                            onChange={(e) => setModifyForm({ ...modifyForm, education_level: e.target.value })}
-                                        />
-                                        <span className="radioLabel">{val}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
+                                <div className="formRow">
+                                    <div className="formGroup">
+                                        <label>University name (for college)</label>
+                                        <input type="text" value={modifyForm.university_name} onChange={(e) => setModifyForm({ ...modifyForm, university_name: e.target.value })} />
+                                    </div>
+                                    <div className="formGroup">
+                                        <label>Keywords (max 4)</label>
+                                        <input type="text" value={modifyForm.keywords} onChange={(e) => setModifyForm({ ...modifyForm, keywords: e.target.value })} />
+                                    </div>
+                                </div>
 
-                        <div className="formGroup">
-                            <label>Teaching language</label>
-                            <div className="radioGroup">
-                                {["bilingual", "arabic", "french", "english", "other"].map((val) => (
-                                    <label key={val}>
-                                        <input
-                                            type="radio"
-                                            value={val}
-                                            checked={modifyForm.teaching_language === val}
-                                            onChange={(e) => setModifyForm({ ...modifyForm, teaching_language: e.target.value })}
-                                        />
-                                        <span className="radioLabel">{val}</span>
-                                    </label>
-                                ))}
-                            </div>
-                            {modifyForm.teaching_language === "other" && (
-                                <input
-                                    type="text"
-                                    placeholder="Specify language"
-                                    value={modifyForm.teaching_language_other}
-                                    onChange={(e) => setModifyForm({ ...modifyForm, teaching_language_other: e.target.value })}
-                                    style={{ marginTop: "10px" }}
-                                />
-                            )}
-                        </div>
-
-                        <div className="formRow">
-                            <div className="formGroup">
-                                <label>University name (for college)</label>
-                                <input type="text" value={modifyForm.university_name} onChange={(e) => setModifyForm({ ...modifyForm, university_name: e.target.value })} />
-                            </div>
-                            <div className="formGroup">
-                                <label>Keywords (max 4)</label>
-                                <input type="text" value={modifyForm.keywords} onChange={(e) => setModifyForm({ ...modifyForm, keywords: e.target.value })} />
-                            </div>
-                        </div>
-
-                        <p style={{ opacity: 0.7, fontSize: "14px" }}>ℹ️ Our system requires real user comments to train the model before a school can be added to the database.</p>
-                        <button type="submit">Update School</button>
-                    </form>
+                                <p style={{ opacity: 0.7, fontSize: "14px" }}>ℹ️ Our system requires real user comments to train the model before a school can be added to the database.</p>
+                                <button type="submit">Update School</button>
+                            </form>
+                        </>
+                    )}
                 </div>
 
                 {/* ════════════════ DELETE SCHOOL ════════════════ */}
                 <h2 className="subtitle">Delete a school</h2>
                 <div className="manAdd schoolSection deleteSection">
-                    <h3 className="h3">Remove by ID</h3>
-                    <form onSubmit={(e) => { e.preventDefault(); handleDeleteSubmit(); }}>
-                        <div className="formGroup">
-                            <label>Enter the ID of school to delete</label>
-                            <input type="text" placeholder="School ID" value={deleteId} onChange={(e) => setDeleteId(e.target.value)} required />
-                        </div>
-                        <button type="submit">Delete School</button>
-                    </form>
+                    <h3 className="h3">Search school to delete</h3>
+                    <SearchDropdown
+                        query={deleteQuery}
+                        onSearch={handleDeleteSearch}
+                        results={deleteResults}
+                        onSelect={selectDeleteSchool}
+                        selected={selectedDeleteSchool}
+                        placeholder="Search school to delete..."
+                    />
+                    <button
+                        type="button"
+                        onClick={handleDeleteSubmit}
+                        style={{ opacity: selectedDeleteSchool ? 1 : 0.75 }}
+                        disabled={!selectedDeleteSchool}
+                    >Delete School</button>
                 </div>
 
             </div>

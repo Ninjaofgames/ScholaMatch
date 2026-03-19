@@ -46,6 +46,10 @@ function AppLayout() {
             <Route path='/admin/profile' element={
               <AdminRoute><Profile /></AdminRoute>
             }/>
+
+            {/* Default route */}
+            <Route path='/' element={<Navigate to="/admin/dashboard" />} />
+            <Route path='*' element={<Navigate to="/admin/dashboard" />} />
           </Routes>
         </main>
       </div>

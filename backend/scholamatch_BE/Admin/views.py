@@ -1,7 +1,7 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from .email_renderer import send_html_email
@@ -173,6 +173,8 @@ class AdminLoginView(APIView):
         })
 
 class AdminDashboardView(APIView):
+    authentication_classes = []
+    permission_classes = []
     def get(self, request):
         token = request.headers.get('Authorization', '').replace('Token ', '')
         if not token.startswith('admin-'):
@@ -197,8 +199,89 @@ class AdminDashboardView(APIView):
 def search_schools(request):
     query = request.GET.get('q', '')
     schools = School.objects.filter(school_name__icontains=query)[:10]
-    data = [{ 'id': s.id_school, 'name': s.school_name} for s in schools]
+    data = [{
+        'id': s.id_school,
+        'name': s.school_name,
+        'location': s.place or '',
+        'location_link': s.maps_link or '',
+        'mail': s.email or '',
+        'phone': s.phone_number or '',
+        'funding_type': s.financial_type or '',
+        'education_level': s.education_type or '',
+        'teaching_language': s.teaching_language or '',
+        'university_name': s.university_name or '',
+        'website_link': s.website_link or '',
+        'description': s.description or '',
+        'image': s.image or '',
+    } for s in schools]
     return Response(data)
+
+@api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
+def create_school(request):
+    try:
+        lang = request.data.get('teaching_language', '')
+        if lang == 'other':
+            lang = request.data.get('teaching_language_other', lang)
+        school = School.objects.create(
+            school_name=request.data.get('name', ''),
+            place=request.data.get('location', ''),
+            maps_link=request.data.get('location_link', ''),
+            email=request.data.get('mail', ''),
+            phone_number=request.data.get('phone', ''),
+            financial_type=request.data.get('funding_type', ''),
+            education_type=request.data.get('education_level', ''),
+            teaching_language=lang,
+            university_name=request.data.get('university_name', ''),
+            website_link=request.data.get('website_link', ''),
+            description=request.data.get('description', ''),
+        )
+        return Response({'success': True, 'id': school.id_school}, status=201)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['PUT'])
+@permission_classes([])
+@authentication_classes([])
+def update_school(request, pk):
+    try:
+        school = School.objects.get(id_school=pk)
+    except School.DoesNotExist:
+        return Response({'error': 'School not found'}, status=404)
+    try:
+        lang = request.data.get('teaching_language', school.teaching_language)
+        if lang == 'other':
+            lang = request.data.get('teaching_language_other', lang)
+        school.school_name = request.data.get('name', school.school_name)
+        school.place = request.data.get('location', school.place)
+        school.maps_link = request.data.get('location_link', school.maps_link)
+        school.email = request.data.get('mail', school.email)
+        school.phone_number = request.data.get('phone', school.phone_number)
+        school.financial_type = request.data.get('funding_type', school.financial_type)
+        school.education_type = request.data.get('education_level', school.education_type)
+        school.teaching_language = lang
+        school.university_name = request.data.get('university_name', school.university_name)
+        school.website_link = request.data.get('website_link', school.website_link)
+        school.description = request.data.get('description', school.description)
+        school.save()
+        return Response({'success': True})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['DELETE'])
+@permission_classes([])
+@authentication_classes([])
+def delete_school(request, pk):
+    try:
+        school = School.objects.get(id_school=pk)
+    except School.DoesNotExist:
+        return Response({'error': 'School not found'}, status=404)
+    try:
+        school.delete()
+        return Response({'success': True})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
 def platformStats(request):
@@ -266,4 +349,45 @@ def keywords_stats(request):
         count=Count('id_aspect')
     ).order_by('-count')[:20]
     data = [{ 'text': a['id_aspect__aspect_name'], 'size': a['count'] * 100 } for a in aspects]
+    return Response(data)
+
+@api_view(['PUT'])
+@permission_classes([])
+@authentication_classes([])
+def change_password(request):
+    token = request.headers.get('Authorization', '').replace('Token ', '')
+    user_id = token.replace('admin-', '')
+    user = User.objects.get(id_user=user_id)
+    if not check_password(request.data['current_password'], user.password):
+        return Response({ 'detail': 'The password given is incorrect!'}, status=400)
+    user.password = make_password(request.data['new_password'])
+    user.save()
+    return Response({ 'success': True })
+
+@api_view(['PUT'])
+@permission_classes([])
+@authentication_classes([])
+def update_profile(request):
+    token = request.headers.get('Authorization', '').replace('Token ', '')
+    user_id = token.replace('admin-', '')
+    user = User.objects.get(id_user=user_id)
+    user.prenom = request.data.get('prenom', user.prenom)
+    user.nom = request.data.get('nom', user.nom)
+    user.email = request.data.get('email', user.email)
+    user.save()
+    return Response({ 'success': True })
+
+@api_view(['GET'])
+def users_growth(request):
+    from django.db import connection
+    data = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon'), COUNT(*)
+            FROM "user"
+            GROUP BY DATE_TRUNC('month', created_at)
+            ORDER BY DATE_TRUNC('month', created_at)
+        """)
+        for row in cursor.fetchall():
+            data.append({ 'date': row[0], 'users': row[1] })
     return Response(data)
