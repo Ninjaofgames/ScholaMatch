@@ -1,0 +1,381 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ school.name }} — Scholamatch</title>
+    <meta name="description" content="Details about {{ school.name }}. {{ school.location }}">
+    <link rel="stylesheet" href="{% static 'main_page/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'main_page/css/detail.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <span class="brand-text">schola<strong>match</strong></span>
+            </a>
+            <div class="navbar-links">
+                <a href="{% url 'home' %}" class="nav-link active">Schools</a>
+                <a href="#" class="nav-link">Partner portal</a>
+            </div>
+            <div class="navbar-actions">
+                <a href="{% url 'admin_page' %}" class="btn-login">
+                    <i class="fas fa-user"></i> Login
+                </a>
+                <button class="icon-btn" id="dark-mode-toggle" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn" title="Language">
+                    <i class="fas fa-globe"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- ═══════════ DETAIL CONTENT ═══════════ -->
+    <main class="detail-page">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Top Section: Image + Header + Contact -->
+        <section class="detail-top">
+            <div class="detail-thumbnail">
+                {% if school.thumbnail %}
+                <img src="{{ school.thumbnail.url }}" alt="{{ school.name }}">
+                {% else %}
+                <div class="detail-thumb-placeholder">
+                    <i class="fas fa-school"></i>
+                </div>
+                {% endif %}
+
+                {% if school.website_link %}
+                <a href="{{ school.website_link }}" target="_blank" rel="noopener" class="btn-action">
+                    <i class="fas fa-globe"></i> View school's website
+                </a>
+                {% endif %}
+                {% if school.location_link %}
+                <a href="{{ school.location_link }}" target="_blank" rel="noopener" class="btn-action">
+                    <i class="fas fa-location-dot"></i> Open school's location
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="detail-header">
+                <h1>{{ school.name }}</h1>
+                <div class="detail-rating">
+                    {% for i in "12345" %}
+                    <i class="fas fa-star {% if forloop.counter <= school.rating %}filled{% endif %}"></i>
+                    {% endfor %}
+                    <span>{{ school.rating }} ({{ school.review_count }} reviews)</span>
+                </div>
+
+                <p class="detail-meta">
+                    {% if school.university_name %}{{ school.university_name }} &bull; {% endif %}
+                    {{ school.get_funding_type_display }} &bull; {{ school.get_education_level_display }}
+                </p>
+
+                {% if school.recommended_for %}
+                <span class="badge-recommended">{{ school.recommended_for }}</span>
+                {% endif %}
+
+                <!-- Info & Contact Grid (identical symmetrical cards) -->
+                <div class="info-contact-grid">
+                    <!-- Informations Card -->
+                    <div class="info-card">
+                        <h2><i class="fas fa-info-circle"></i> Informations</h2>
+                        <div class="info-content">
+                            {% if school.description %}
+                            <p>{{ school.description }}</p>
+                            {% else %}
+                            <p class="text-muted">No description available yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Contact Card -->
+                    <div class="contact-card">
+                        <h2><i class="fas fa-address-book"></i> Contact</h2>
+                        <div class="contact-content">
+                            <ul>
+                                {% if school.mail %}
+                                <li><i class="fas fa-envelope"></i> <span>{{ school.mail }}</span></li>
+                                {% endif %}
+                                {% if school.phone %}
+                                <li><i class="fas fa-phone"></i> <span>{{ school.phone }}</span></li>
+                                {% endif %}
+                                {% if school.location %}
+                                <li><i class="fas fa-location-dot"></i> <span>{{ school.location }}</span></li>
+                                {% endif %}
+                                {% if not school.mail and not school.phone and not school.location %}
+                                <li class="text-muted">No contact info available.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- AI Recommendation — full width, split desktop layout -->
+        <section class="detail-section-full">
+            <div class="ai-recommendation-card">
+                <div class="ai-header-col">
+                    <div class="ai-badge-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>AI recommendation</h3>
+                    <p class="ai-intro">Why this school matches you</p>
+                </div>
+                <div class="ai-list-col">
+                    {% if school.get_ai_recommendation_list %}
+                    <ul class="ai-bullet-list">
+                        {% for item in school.get_ai_recommendation_list %}
+                        <li><i class="fas fa-check"></i> {{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <ul class="ai-bullet-list">
+                        <li><i class="fas fa-check"></i> Strong in Computer science</li>
+                        <li><i class="fas fa-check"></i> High employment rate</li>
+                        <li><i class="fas fa-check"></i> Positive student rate</li>
+                        <li><i class="fas fa-check"></i> Affordable tuition</li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Keywords — full width -->
+        <section class="detail-section-full">
+            <div class="programs-block programs-block--full">
+                <h3><i class="fas fa-tags"></i> Keywords</h3>
+                <div class="tag-list">
+                    {% for prog in school.get_programs_list %}
+                    <span class="tag">{{ prog }}</span>
+                    {% empty %}
+                    {% for kw in school.get_keywords_list %}
+                    <span class="tag">{{ kw }}</span>
+                    {% empty %}
+                    <span class="text-muted">No keywords listed</span>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Sentiment + Comments Row -->
+        <section class="detail-row">
+            <div class="sentiment-block">
+                <h3><i class="fas fa-face-smile"></i> Sentiment score</h3>
+                <div class="sentiment-meter">
+                    <div class="sentiment-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" class="track" />
+                            <circle cx="50" cy="50" r="42" class="fill"
+                                stroke-dashoffset="calc(264 - (264 * {{ school.sentiment_score }}) / 100)" />
+                        </svg>
+                        <span class="sentiment-value">{{ school.sentiment_score }}%</span>
+                        <span class="sentiment-label">positive</span>
+                    </div>
+                    <div class="sentiment-badge">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+
+                <!-- Aspect Positivity Gauges -->
+                <div class="aspect-scores">
+                    <p class="aspect-scores-label"><i class="fas fa-chart-pie"></i> Aspect positivity</p>
+                    <div class="aspect-gauges">
+
+                        <div class="aspect-gauge">
+                            <div class="aspect-arc" style="--pct: {{ aspect_positivity.teachers }}">
+                                <svg viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="32" class="a-track" />
+                                    <circle cx="40" cy="40" r="32" class="a-fill"
+                                        stroke-dashoffset="calc(201 - (201 * {{ aspect_positivity.teachers }}) / 100)" />
+                                </svg>
+                                <span class="a-value">{{ aspect_positivity.teachers }}%</span>
+                            </div>
+                            <span class="a-label"><i class="fas fa-chalkboard-teacher"></i> Teachers</span>
+                        </div>
+
+                        <div class="aspect-gauge">
+                            <div class="aspect-arc" style="--pct: {{ aspect_positivity.facilities }}">
+                                <svg viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="32" class="a-track" />
+                                    <circle cx="40" cy="40" r="32" class="a-fill"
+                                        stroke-dashoffset="calc(201 - (201 * {{ aspect_positivity.facilities }}) / 100)" />
+                                </svg>
+                                <span class="a-value">{{ aspect_positivity.facilities }}%</span>
+                            </div>
+                            <span class="a-label"><i class="fas fa-building"></i> Facilities</span>
+                        </div>
+
+                        <div class="aspect-gauge">
+                            <div class="aspect-arc" style="--pct: {{ aspect_positivity.administration }}">
+                                <svg viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="32" class="a-track" />
+                                    <circle cx="40" cy="40" r="32" class="a-fill"
+                                        stroke-dashoffset="calc(201 - (201 * {{ aspect_positivity.administration }}) / 100)" />
+                                </svg>
+                                <span class="a-value">{{ aspect_positivity.administration }}%</span>
+                            </div>
+                            <span class="a-label"><i class="fas fa-user-tie"></i> Admin</span>
+                        </div>
+
+                        <div class="aspect-gauge">
+                            <div class="aspect-arc" style="--pct: {{ aspect_positivity.affordability }}">
+                                <svg viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="32" class="a-track" />
+                                    <circle cx="40" cy="40" r="32" class="a-fill"
+                                        stroke-dashoffset="calc(201 - (201 * {{ aspect_positivity.affordability }}) / 100)" />
+                                </svg>
+                                <span class="a-value">{{ aspect_positivity.affordability }}%</span>
+                            </div>
+                            <span class="a-label"><i class="fas fa-dollar-sign"></i> Affordability</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="comments-block">
+                <h3><i class="fas fa-comments"></i> Comments</h3>
+                <form method="post" class="comment-form">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Your name" class="comment-name-input">
+                    <div class="comment-input-row">
+                        <input type="text" name="comment_text" placeholder="Leave a comment about this school..."
+                            class="comment-text-input">
+                        <button type="submit" class="comment-send-btn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </form>
+
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment-item">
+                        <div class="comment-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <strong>{{ comment.username }}</strong>
+                                <span class="sentiment-badge sentiment-{{ comment.sentiment }}">
+                                    {% if comment.sentiment == 'good' %}
+                                        <i class="fas fa-face-smile"></i> Good
+                                    {% elif comment.sentiment == 'bad' %}
+                                        <i class="fas fa-face-frown"></i> Bad
+                                    {% else %}
+                                        <i class="fas fa-face-meh"></i> Neutral
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <p>{{ comment.text }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted no-comments">No comments yet. Be the first to share your experience!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span class="brand-text">schola<strong>match</strong></span>
+                </div>
+                <div class="footer-columns">
+                    <div class="footer-col">
+                        <h3>About</h3>
+                        <ul>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Our mission</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Platform</h3>
+                        <ul>
+                            <li><a href="#">Schools</a></li>
+                            <li><a href="#">Compare Schools</a></li>
+                            <li><a href="#">How it works</a></li>
+                            <li><a href="#">Partner Portal</a></li>
+                            <li><a href="#">Success stories</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Information</h3>
+                        <ul>
+                            <li><a href="#">Contact us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of service</a></li>
+                            <li><a href="#">Data Transparency</a></li>
+                            <li><a href="#">Help center</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Created by team &mdash; all rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* Dark mode toggle */
+        const toggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        const icon = toggle.querySelector('i');
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+        });
+
+        /* ── Aspect Arc Color Coding ── */
+        document.querySelectorAll('.aspect-arc').forEach(arc => {
+            const pct = parseFloat(arc.style.getPropertyValue('--pct') || arc.getAttribute('style').match(/--pct:\s*([\d.]+)/)?.[1] || 50);
+            const fill = arc.querySelector('.a-fill');
+            if (!fill) return;
+            if (pct >= 66) {
+                fill.style.stroke = '#22c55e';      /* green */
+            } else if (pct >= 34) {
+                fill.style.stroke = '#f59e0b';      /* amber */
+            } else {
+                fill.style.stroke = '#ef4444';      /* red */
+            }
+        });
+    </script>
+</body>
+
+</html>
