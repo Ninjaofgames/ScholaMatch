@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/auth/update-profile/', views.update_profile),
     path('api/auth/change-password/', views.change_password),
     path('api/stats/users-growth/', views.users_growth),
+    path('api/comments/upload-csv/', views.upload_comments_csv),
 ]

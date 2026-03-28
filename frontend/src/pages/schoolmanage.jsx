@@ -41,7 +41,7 @@ const emptyForm = {
     name: "", website_link: "", location: "", location_link: "",
     mail: "", phone: "", funding_type: "", education_level: "",
     teaching_language: "", teaching_language_other: "",
-    university_name: "", keywords: "", thumbnail: null,
+    university_name: "", keywords: "", image_link: "",
 };
 
 export default function SchoolManagement(){
@@ -101,7 +101,7 @@ export default function SchoolManagement(){
             teaching_language_other: "",
             university_name: school.university_name || "",
             keywords: "",
-            thumbnail: null,
+            image_link: school.image || "",
         });
     };
 
@@ -112,13 +112,6 @@ export default function SchoolManagement(){
     };
 
     // ── Handlers ──
-    const handleDrop = (e, setter, form) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            setter({ ...form, thumbnail: file });
-        }
-    };
 
     const handleAddSubmit = async () => {
         try {
@@ -126,7 +119,8 @@ export default function SchoolManagement(){
             if (data.teaching_language === 'other') {
                 data.teaching_language_other = data.teaching_language_other;
             }
-            delete data.thumbnail;
+            data.image = data.image_link;
+            delete data.image_link;
             await axios.post(`${API_BASE_URL}/schools/create/`, data);
             alert("School added successfully!");
             setAddForm({ ...emptyForm });
@@ -142,7 +136,8 @@ export default function SchoolManagement(){
         }
         try {
             const data = { ...modifyForm };
-            delete data.thumbnail;
+            data.image = data.image_link;
+            delete data.image_link;
             await axios.put(`${API_BASE_URL}/schools/${selectedModifySchool.id}/update/`, data);
             alert("School updated successfully!");
         } catch (error) {
@@ -178,35 +173,11 @@ export default function SchoolManagement(){
                 <h2 className="subtitle">Add a new school</h2>
                 <div className="manAdd">
                     <div className="schoolSection">
-                        <h3 className="h3">Thumbnail photo</h3>
-                        <div
-                            className="dropArea"
-                            onDrop={(e) => handleDrop(e, setAddForm, addForm)}
-                            onDragOver={(e) => e.preventDefault()}
-                            style={{width:"91%"}}
-                        >
-                            <div className="otherDrop">
-                                <i className="fa-solid fa-image"></i>
-                                <button
-                                    className="uploadBtn"
-                                    type="button"
-                                    onClick={() => document.getElementById("thumbnail_add").click()}
-                                >
-                                    UPLOAD
-                                </button>
-                                <input
-                                    id="thumbnail_add"
-                                    type="file"
-                                    accept="image/png,image/jpeg,image/jpg,image/gif"
-                                    style={{ display: "none" }}
-                                    onChange={(e) => setAddForm({ ...addForm, thumbnail: e.target.files[0] })}
-                                />
-                                <p>{addForm.thumbnail ? `✓ ${addForm.thumbnail.name}` : "Drop your image here, or click to browse"}</p>
-                                <span style={{fontSize: "12px", opacity: 0.6}}>1600 × 900 px recommended · PNG, JPG, GIF</span>
-                            </div>
-                        </div>
-
                         <h3 className="h3">School information</h3>
+                        <div className="formGroup">
+                            <label>Image link</label>
+                            <input type="text" placeholder="Paste an image URL (e.g. https://...)" value={addForm.image_link} onChange={(e) => setAddForm({ ...addForm, image_link: e.target.value })} />
+                        </div>
                         <form onSubmit={(e) => { e.preventDefault(); handleAddSubmit(); }}>
                             <div className="formRow">
                                 <div className="formGroup">
@@ -330,33 +301,11 @@ export default function SchoolManagement(){
 
                     {selectedModifySchool && (
                         <>
-                            <h3 className="h3">Update thumbnail</h3>
-                            <div
-                                className="dropArea"
-                                onDrop={(e) => handleDrop(e, setModifyForm, modifyForm)}
-                                onDragOver={(e) => e.preventDefault()}
-                            >
-                                <div className="otherDrop">
-                                    <i className="fa-solid fa-image"></i>
-                                    <button
-                                        className="uploadBtn"
-                                        type="button"
-                                        onClick={() => document.getElementById("thumbnail_modify").click()}
-                                    >
-                                        UPLOAD
-                                    </button>
-                                    <input
-                                        id="thumbnail_modify"
-                                        type="file"
-                                        accept="image/png,image/jpeg,image/jpg,image/gif"
-                                        style={{ display: "none" }}
-                                        onChange={(e) => setModifyForm({ ...modifyForm, thumbnail: e.target.files[0] })}
-                                    />
-                                    <p>{modifyForm.thumbnail ? `✓ ${modifyForm.thumbnail.name}` : "Drop your image here, or click to browse"}</p>
-                                </div>
-                            </div>
-
                             <h3 className="h3">School information</h3>
+                            <div className="formGroup">
+                                <label>Image link</label>
+                                <input type="text" placeholder="Paste an image URL (e.g. https://...)" value={modifyForm.image_link} onChange={(e) => setModifyForm({ ...modifyForm, image_link: e.target.value })} />
+                            </div>
                             <form onSubmit={(e) => { e.preventDefault(); handleModifySubmit(); }}>
                                 <div className="formRow">
                                     {["name", "website_link", "location", "location_link", "mail", "phone"].reduce((rows, field, i) => {

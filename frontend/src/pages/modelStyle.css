@@ -18,14 +18,56 @@ body{
 }
 
 .dropArea{
-    background-color: rgba(95, 195, 220, 0.5);
-    color: black;
-    display: block;
-    width: 80%;
-    padding: 10px 40px;
-    border-radius: 20px;
-    border: 2px dashed rgba(0, 0, 0, 0.5);
-    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.05), rgba(95, 195, 220, 0.05));
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 30px 40px;
+    border-radius: 16px;
+    border: 2px dashed rgba(75, 184, 75, 0.35);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    box-sizing: border-box;
+}
+
+.dropArea::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(75, 184, 75, 0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.dropArea:hover {
+    border-color: rgba(75, 184, 75, 0.6);
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.08), rgba(95, 195, 220, 0.08));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(75, 184, 75, 0.15);
+}
+
+.dropArea:hover::before {
+    opacity: 1;
+}
+
+.dropArea.drag-over {
+    border-color: #4BB84B;
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.15), rgba(95, 195, 220, 0.12));
+    transform: scale(1.01);
+    box-shadow: 0 0 30px rgba(75, 184, 75, 0.25), inset 0 0 30px rgba(75, 184, 75, 0.05);
+}
+
+.dropArea.has-file {
+    border-style: solid;
+    border-color: rgba(75, 184, 75, 0.4);
+    cursor: default;
+    padding: 20px 25px;
+    min-height: auto;
 }
 
 .dropArea .otherDrop{
@@ -33,6 +75,336 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.drop-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.2), rgba(95, 195, 220, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+}
+
+.dropArea:hover .drop-icon-circle {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.3), rgba(95, 195, 220, 0.25));
+}
+
+.drop-icon-circle i {
+    font-size: 28px;
+    color: #4BB84B;
+}
+
+.drop-main-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+}
+
+.drop-sub-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+}
+
+.browse-link {
+    color: #5FC3DC;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.browse-link:hover {
+    color: #4BB84B;
+}
+
+.drop-formats {
+    margin-top: 6px;
+}
+
+.format-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(75, 184, 75, 0.15);
+    color: #4BB84B;
+    border: 1px solid rgba(75, 184, 75, 0.25);
+}
+
+/* File info (when file is selected) */
+.file-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 15px;
+}
+
+.file-info-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.file-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4BB84B, #3d9236);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.file-icon-wrap i {
+    font-size: 22px;
+    color: #fff;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.file-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 2px;
+}
+
+.file-remove-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 80, 80, 0.15);
+    color: #ff5050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.file-remove-btn:hover {
+    background: rgba(255, 80, 80, 0.3);
+    transform: scale(1.1);
+    box-shadow: none;
+}
+
+/* Bulk import card header */
+.bulk-import-card {
+    position: relative;
+}
+
+.bulk-import-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.bulk-import-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(75, 184, 75, 0.25), rgba(95, 195, 220, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bulk-import-icon-wrap i {
+    font-size: 22px;
+    color: #4BB84B;
+}
+
+.bulk-import-header .h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+.bulk-import-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 2px 0 0 0;
+}
+
+/* Action buttons */
+.bulk-import-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.template-btn {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.template-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.template-btn i {
+    font-size: 16px;
+}
+
+.submit-csv-btn {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #4BB84B, #3d9236);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.3s ease;
+}
+
+.submit-csv-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(75, 184, 75, 0.35);
+}
+
+.submit-csv-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.submit-csv-btn i {
+    font-size: 14px;
+}
+
+/* CSV result alerts */
+.csv-alert {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-top: 16px;
+    animation: fadeInUp 0.35s ease;
+}
+
+.csv-alert-success {
+    background: rgba(75, 184, 75, 0.12);
+    border: 1px solid rgba(75, 184, 75, 0.3);
+}
+
+.csv-alert-error {
+    background: rgba(255, 80, 80, 0.12);
+    border: 1px solid rgba(255, 80, 80, 0.3);
+}
+
+.csv-alert-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.csv-alert-success .csv-alert-icon {
+    color: #4BB84B;
+}
+
+.csv-alert-error .csv-alert-icon {
+    color: #ff5050;
+}
+
+.csv-alert-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.csv-alert-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+}
+
+.csv-alert-detail {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 2px;
+}
+
+.csv-error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.csv-error-item {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.4;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropArea .otherDrop i{
@@ -58,7 +430,7 @@ h3.h3{
 }
 
 .modelMain{
-    margin-left: 62px;
+    margin-left: 68px;
 }
 
 .subtitle{
@@ -105,7 +477,7 @@ h3.h3{
     color: rgba(255, 255, 255, 0.4);
 }
 
-.manAdd button{
+.manAdd:not(.bulk-import-card) button{
     background-color: #4BB84B;
     color: white;
     border: none;
@@ -118,7 +490,7 @@ h3.h3{
     margin-top: 15px;
 }
 
-.manAdd button:hover{
+.manAdd:not(.bulk-import-card) button:hover{
     background-color: #3d9236;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(75, 184, 75, 0.3);

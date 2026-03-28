@@ -8,7 +8,7 @@ from .email_renderer import send_html_email
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Count
 import random
-from .models import Comment, User, School, Aspect, Analysis
+from .models import Comment, User, School, Aspect, Analysis, SchoolComment
 from .serializers import CommentSerializer
 import csv
 import io
@@ -19,22 +19,65 @@ def test_connection(request):
     return Response({"message": "Connection successful!"})
 
 @api_view(['POST'])
-def upload_csv(request):
+@permission_classes([])
+@authentication_classes([])
+def upload_comments_csv(request):
     file = request.FILES.get('file')
     if not file:
-        return Response({"error": "No file uploaded"}, status=400)
-    if not file.name.endswith('.csv'):
-        return Response({"error": "File must be a CSV"}, status=400)
-    decoded_file = file.read().decode('utf-8')
-    reader = csv.reader(io.StringIO(decoded_file))
-    rows = []
-    for row in reader:
-        rows.append(row)
-    return Response({
-        "message": "File uploaded successfully!",
-        "filename": file.name,
-        "rows": len(rows)
-    })
+        return Response({'error': 'No file uploaded'}, status=400)
+    decoded = file.read().decode('utf-8-sig')  # utf-8-sig strips BOM from Excel CSVs
+    # Auto-detect delimiter (comma or semicolon)
+    first_line = decoded.split('\n')[0] if decoded else ''
+    delimiter = ';' if first_line.count(';') > first_line.count(',') else ','
+    reader = csv.DictReader(io.StringIO(decoded), delimiter=delimiter)
+    print(f"[CSV DEBUG] Delimiter: '{delimiter}'")
+    print(f"[CSV DEBUG] Fieldnames: {reader.fieldnames}")
+    rows = list(reader)
+    print(f"[CSV DEBUG] Total rows: {len(rows)}")
+    if rows:
+        print(f"[CSV DEBUG] First row: {dict(rows[0])}")
+    saved = 0
+    errors = []
+    for i, row in enumerate(rows):
+        try:
+            comment_content = row.get('comment_content', '').strip()
+            school_name = row.get('school_name', '').strip()
+            
+            if not comment_content:
+                errors.append(f"Row {i+2}: missing comment_content")
+                continue
+            aspects = []
+            j = 1
+            while f'aspect{j}_name' in row:
+                name = row[f'aspect{j}_name'].strip()
+                polarity = row[f'aspect{j}_polarity'].strip().lower()
+                if name and polarity in ['positive', 'neutral', 'negative']:
+                    aspects.append({'aspect': name, 'polarity': polarity})
+                j += 1
+            npos = sum(1 for a in aspects if a['polarity'] == 'positive')
+            nneg = sum(1 for a in aspects if a['polarity'] == 'negative')
+            score = round((npos - nneg) / len(aspects), 2) if aspects else 0
+            label = 'positive' if score > 0 else ('negative' if score < 0 else 'neutral')
+            
+            comment = Comment.objects.create(
+                comment_content=comment_content,
+                data_source='csv',
+                sentiment_score=score,
+                sentiment_label=label,
+            )
+            if school_name:
+                school = School.objects.filter(school_name__iexact=school_name).first()
+                if school:
+                    SchoolComment.objects.create(id_ecole=school.id_school, id_comment=comment)
+            for a in aspects:
+                aspect, _ = Aspect.objects.get_or_create(aspect_name=a['aspect'])
+                Analysis.objects.create(id_comment=comment, id_aspect=aspect, polarity=a['polarity'])
+            saved += 1
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            errors.append(f"Row {i+2}: {str(e)}")
+    return Response({'saved': saved, 'errors': errors})
 
 @api_view(['POST'])
 def submit_comment(request):
@@ -236,6 +279,7 @@ def create_school(request):
             university_name=request.data.get('university_name', ''),
             website_link=request.data.get('website_link', ''),
             description=request.data.get('description', ''),
+            image=request.data.get('image', ''),
         )
         return Response({'success': True, 'id': school.id_school}, status=201)
     except Exception as e:
@@ -264,6 +308,7 @@ def update_school(request, pk):
         school.university_name = request.data.get('university_name', school.university_name)
         school.website_link = request.data.get('website_link', school.website_link)
         school.description = request.data.get('description', school.description)
+        school.image = request.data.get('image', school.image)
         school.save()
         return Response({'success': True})
     except Exception as e:
