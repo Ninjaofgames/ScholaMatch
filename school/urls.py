@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main_page.urls')),  # Public homepage
     path('admin-panel/', include('schools_app.urls')),  # School management CRUD
+    path('api/', include('schools_app.api_urls')),  # React API routes
 ]
 
 # Serve media files during development
