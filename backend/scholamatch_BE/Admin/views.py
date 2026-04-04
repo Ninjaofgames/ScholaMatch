@@ -8,7 +8,7 @@ from .email_renderer import send_html_email
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Count
 import random
-from .models import Comment, User, School, Aspect, Analysis, SchoolComment
+from .models import Comment, User, School, Aspect, Analysis, SchoolComment, MotCle, SchoolSpeciality, Speciality
 from .serializers import CommentSerializer
 import csv
 import io
@@ -97,6 +97,8 @@ def get_comments(request):
     return Response(serializer.data)
 
 class RegisterView(APIView):
+    authentication_classes = []
+    permission_classes = []
     def post(self, request):
         email = request.data.get('email')
         if not email:
@@ -177,6 +179,8 @@ class ResendCodeView(APIView):
         return Response({ 'success': True })
     
 class LoginView(APIView):
+    authentication_classes = []
+    permission_classes = []
     def post(self, request):
         try:
             user = User.objects.get(email=request.data['email'])
@@ -195,6 +199,8 @@ class ProfileView(APIView):
         return Response({ 'user': { 'email': user.email, 'first_name': user.first_name } })
 
 class AdminLoginView(APIView):
+    authentication_classes = []
+    permission_classes = []
     def post(self, request):
         try:
             user = User.objects.get(email=request.data['email'])
@@ -436,3 +442,190 @@ def users_growth(request):
         for row in cursor.fetchall():
             data.append({ 'date': row[0], 'users': row[1] })
     return Response(data)
+
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
+def school_detail(request, pk):
+    try:
+        school = School.objects.get(id_school=pk)
+    except School.DoesNotExist:
+        return Response({'error': 'School not found'}, status=404)
+
+    # Get all comments linked to this school (raw SQL - table has no 'id' column)
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id_comment FROM school_comment WHERE id_ecole = %s", [school.id_school])
+        comment_ids = [row[0] for row in cursor.fetchall()]
+    comments = Comment.objects.filter(id_comment__in=comment_ids)
+
+    # Compute sentiment score (% positive)
+    total_comments = comments.count()
+    if total_comments > 0:
+        positive_count = comments.filter(sentiment_label='positive').count()
+        sentiment_score = round((positive_count / total_comments) * 100, 1)
+    else:
+        sentiment_score = 0
+
+    # Compute rating from sentiment score (map 0-100 to 1-5)
+    rating = round(sentiment_score / 20) if total_comments > 0 else 0
+    rating = max(0, min(5, rating))
+
+    # Compute aspect positivity
+    aspect_positivity = {
+        'teachers': 0,
+        'facilities': 0,
+        'administration': 0,
+        'affordability': 0,
+    }
+    aspect_mapping = {
+        'teachers': ['teacher', 'teachers', 'professor', 'professors', 'instructor', 'instructors', 'enseignant', 'enseignants', 'prof'],
+        'facilities': ['facility', 'facilities', 'building', 'buildings', 'campus', 'infrastructure', 'lab', 'library'],
+        'administration': ['administration', 'admin', 'management', 'staff', 'organization', 'bureaucracy'],
+        'affordability': ['affordability', 'price', 'cost', 'tuition', 'fee', 'fees', 'affordable', 'expensive', 'cheap'],
+    }
+
+    for category, keywords in aspect_mapping.items():
+        aspects = Aspect.objects.filter(aspect_name__in=keywords)
+        if aspects.exists():
+            analyses = Analysis.objects.filter(
+                id_comment__in=comment_ids,
+                id_aspect__in=aspects
+            )
+            total = analyses.count()
+            if total > 0:
+                pos = analyses.filter(polarity='positive').count()
+                aspect_positivity[category] = round((pos / total) * 100, 1)
+
+    # Get keywords from mot_cle table
+    keywords_qs = MotCle.objects.filter(id_school=school.id_school)
+    keywords_list = [kw.content for kw in keywords_qs]
+
+    # Get specialities (raw SQL since table has no id column)
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id_speciality FROM school_speciality WHERE id_school = %s", [school.id_school])
+        speciality_ids = [row[0] for row in cursor.fetchall()]
+        
+    programs_list = []
+    for spec_id in speciality_ids:
+        try:
+            spec = Speciality.objects.get(id_speciality=spec_id)
+            programs_list.append(spec.speciality_name)
+        except Speciality.DoesNotExist:
+            pass
+
+    data = {
+        'id': school.id_school,
+        'name': school.school_name,
+        'location': school.place or '',
+        'location_link': school.maps_link or '',
+        'mail': school.email or '',
+        'phone': school.phone_number or '',
+        'funding_type': school.financial_type or '',
+        'funding_type_display': school.financial_type or '',
+        'education_level': school.education_type or '',
+        'education_level_display': school.education_type or '',
+        'teaching_language': school.teaching_language or '',
+        'university_name': school.university_name or '',
+        'website_link': school.website_link or '',
+        'description': school.description or '',
+        'thumbnail_url': school.image or '',
+        'image': school.image or '',
+        'sentiment_score': sentiment_score,
+        'rating': rating,
+        'review_count': total_comments,
+        'aspectPositivity': aspect_positivity,
+        'keywords_list': keywords_list,
+        'programs_list': programs_list,
+    }
+    return Response(data)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([])
+@authentication_classes([])
+def school_comments(request, pk):
+    try:
+        school = School.objects.get(id_school=pk)
+    except School.DoesNotExist:
+        return Response({'error': 'School not found'}, status=404)
+
+    if request.method == 'GET':
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id_comment FROM school_comment WHERE id_ecole = %s", [school.id_school])
+            comment_ids = [row[0] for row in cursor.fetchall()]
+        comments = Comment.objects.filter(id_comment__in=comment_ids).order_by('-comment_date')
+
+        results = []
+        for c in comments:
+            if c.sentiment_label == 'positive':
+                sentiment = 'good'
+            elif c.sentiment_label == 'negative':
+                sentiment = 'bad'
+            else:
+                sentiment = 'neutral'
+
+            results.append({
+                'id': c.id_comment,
+                'username': c.data_source or 'Anonymous',
+                'text': c.comment_content,
+                'sentiment': sentiment,
+                'date': c.comment_date.isoformat() if c.comment_date else None,
+            })
+        return Response(results)
+
+    elif request.method == 'POST':
+        username = request.data.get('username', 'Anonymous')
+        text = request.data.get('text', '')
+
+        if not text:
+            return Response({'error': 'Comment text is required'}, status=400)
+
+        positive_words = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'best', 'love', 'helpful',
+                          'fantastic', 'awesome', 'nice', 'perfect', 'recommend', 'top', 'bien', 'super',
+                          'genial', 'magnifique', 'parfait', 'excellente', 'formidable']
+        negative_words = ['bad', 'terrible', 'worst', 'horrible', 'poor', 'hate', 'awful', 'disappointing',
+                          'useless', 'waste', 'mauvais', 'nul', 'pire', 'decevant']
+
+        text_lower = text.lower()
+        pos_count = sum(1 for w in positive_words if w in text_lower)
+        neg_count = sum(1 for w in negative_words if w in text_lower)
+
+        if pos_count > neg_count:
+            sentiment_label = 'positive'
+            sentiment_score = 0.5
+        elif neg_count > pos_count:
+            sentiment_label = 'negative'
+            sentiment_score = -0.5
+        else:
+            sentiment_label = 'neutral'
+            sentiment_score = 0.0
+
+        comment = Comment.objects.create(
+            comment_content=text,
+            data_source=username,
+            sentiment_score=sentiment_score,
+            sentiment_label=sentiment_label,
+        )
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO school_comment (id_ecole, id_comment) VALUES (%s, %s)",
+                [school.id_school, comment.id_comment]
+            )
+
+        if sentiment_label == 'positive':
+            display_sentiment = 'good'
+        elif sentiment_label == 'negative':
+            display_sentiment = 'bad'
+        else:
+            display_sentiment = 'neutral'
+
+        return Response({
+            'id': comment.id_comment,
+            'username': username,
+            'text': comment.comment_content,
+            'sentiment': display_sentiment,
+            'date': comment.comment_date.isoformat() if comment.comment_date else None,
+        }, status=201)

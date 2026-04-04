@@ -33,4 +33,6 @@ urlpatterns = [
     path('api/auth/change-password/', views.change_password),
     path('api/stats/users-growth/', views.users_growth),
     path('api/comments/upload-csv/', views.upload_comments_csv),
+    path('api/schools/<int:pk>/', views.school_detail),
+    path('api/schools/<int:pk>/comments/', views.school_comments),
 ]

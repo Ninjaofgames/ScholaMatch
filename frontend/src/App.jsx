@@ -12,48 +12,38 @@ import { AdminAuthProvider } from './context/AdminAuthContext'
 import AdminLogin from './pages/adminLogin'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
+import UserHome from './pages/UserHome'
+import SchoolDetail from './pages/SchoolDetails'
+import './userStyles.css'
 
 function AppLayout() {
   const location = useLocation();
   const isAuthPage = ['/login', '/register', '/verify', '/adminLgin'].includes(location.pathname);
+  const isUserPage = location.pathname === '/' || location.pathname.startsWith('/school/');
+  const hideLayout = isAuthPage || isUserPage;
 
   return (
     <>
-      {!isAuthPage && <VantaBg />}
+      {!hideLayout && <VantaBg />}
       <div style={{display: "flex", zIndex: 1, position: "relative"}}>
-        {!isAuthPage && <SideBar />}
-        <main style={{flex: 1, marginLeft: isAuthPage ? "0" : "60px"}}>
+        {!hideLayout && <SideBar />}
+        <main style={{flex: 1, marginLeft: hideLayout ? "0" : "60px"}}>
           <Routes>
+            <Route path='/' element={<UserHome />} />
+            <Route path='/school/:id' element={<SchoolDetail />} />
             <Route path='/login' element={<AuthPage />} />
             <Route path='/register' element={<AuthPage />} />
             <Route path="/verify" element={<AuthPage />} />
             <Route path='/adminLgin' element={<AdminLogin />} />
-
-            {/* Protected user routes */}
-            <Route path='/profile_user' element={
-              <ProtectedRoute><Profile /></ProtectedRoute>
-            }/>
-            {/* Admin only routes */}
-            <Route path='/admin/schoolM' element={
-              <AdminRoute><SchoolManagement /></AdminRoute>
-            }/>
-            <Route path='/admin/modelTrain' element={
-              <AdminRoute><Model /></AdminRoute>
-            }/>
-            <Route path='/admin/dashboard' element={
-              <AdminRoute><Home /></AdminRoute>
-            }/>
-            <Route path='/admin/profile' element={
-              <AdminRoute><Profile /></AdminRoute>
-            }/>
-
-            {/* Default route */}
-            <Route path='/' element={<Navigate to="/admin/dashboard" />} />
-            <Route path='*' element={<Navigate to="/admin/dashboard" />} />
+            <Route path='/profile_user' element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
+            <Route path='/admin/schoolM' element={<AdminRoute><SchoolManagement /></AdminRoute>}/>
+            <Route path='/admin/modelTrain' element={<AdminRoute><Model /></AdminRoute>}/>
+            <Route path='/admin/dashboard' element={<AdminRoute><Home /></AdminRoute>}/>
+            <Route path='/admin/profile' element={<AdminRoute><Profile /></AdminRoute>}/>
           </Routes>
         </main>
       </div>
-      {!isAuthPage && <FooterComp />}
+      {!hideLayout && <FooterComp />}
     </>
   );
 }
