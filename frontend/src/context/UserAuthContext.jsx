@@ -30,6 +30,17 @@ export const UserAuthProvider = ({ children }) => {
     init();
   }, []);
 
+  useEffect(() => {
+    // Actively poll expiration state every minute
+    const interval = setInterval(() => {
+      const token = userAuthService.getUserToken();
+      if (!token && user) {
+        logout();
+      }
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   const login = async (email, password) => {
     const data = await userAuthService.userLogin({ email, password });
     userAuthService.setUserToken(data.token);

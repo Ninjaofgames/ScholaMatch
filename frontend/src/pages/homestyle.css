@@ -1,3 +1,9 @@
+.profileMain{
+    margin-left: 68px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
 .mainStats{
     display: flex;
     align-items: center;
@@ -25,11 +31,18 @@
 
 .oneStat i{
     border: none;
-    border-radius: 20px;
+    border-radius: 50%;
     color: #4BB84B;
-    background-color: white;
-    font-size: 40px;
-    padding: 10px 5px;
+    background-color: rgba(255, 255, 255, 0.95);
+    font-size: 32px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 h4.statTitle{
@@ -48,4 +61,33 @@ h4.statTitle{
 
 .twoStats .manAdd{
     width: 495px;
+}
+
+@media screen and (max-width: 1024px) {
+}
+
+@media screen and (max-width: 768px) {
+    .mainStats {
+        gap: 15px;
+    }
+    .oneStat {
+        width: calc(50% - 15px);
+        padding: 20px 0;
+    }
+    .oneStat i {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    h4.statTitle {
+        font-size: 16px;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .oneStat {
+        width: 100%;
+    }
 }

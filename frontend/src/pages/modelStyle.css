@@ -8,6 +8,10 @@ body{
     color: #4BB84B;
     font-weight: 900;
     font-size: 46px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: left;
+    margin-left: 50px;
 }
 
 .center{
@@ -431,6 +435,8 @@ h3.h3{
 
 .modelMain{
     margin-left: 68px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .subtitle{
@@ -440,31 +446,35 @@ h3.h3{
     align-self: stretch;
     color: #4BB84B;
     margin-left: 50px;
+    margin-bottom: 15px;
+    margin-top: 20px;
 }
 
 .manAdd{
     display: block;
-    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
     width: 80%;
-    padding: 10px 40px 40px 40px;
+    padding: 30px 40px;
     border-radius: 20px;
-    border: none;
-    background-color: rgba(95, 195, 220, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(30, 41, 59, 0.6);
     color: #E8EFF6;
     flex-wrap: wrap;
+    backdrop-filter: blur(12px);
 }
 
 .manAdd textarea{
     width: 100%;
     padding: 15px;
-    border: 2px solid #4BB84B;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.15);
     color: #E8EFF6;
     font-size: 16px;
     font-family: inherit;
     resize: vertical;
     min-height: 120px;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
 }
 
 .manAdd textarea:focus, .formGroup input[type="text"]:focus, input[type="number"]:focus{
@@ -509,14 +519,14 @@ h3.h3{
 
 .formGroup input[type="text"], input[type="number"]{
     width: 100%;
-    padding: 12px;
-    border: 2px solid #4BB84B;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.15);
     color: #E8EFF6;
-    font-size: 16px;
+    font-size: 15px;
     font-family: inherit;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
     box-sizing: border-box;
     cursor: text;
 }
@@ -625,14 +635,14 @@ h3.h3{
 
 .formGroup select{
     width: 100%;
-    padding: 12px;
-    border: 2px solid #4BB84B;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.15);
     color: #E8EFF6;
-    font-size: 16px;
+    font-size: 15px;
     font-family: inherit;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
     box-sizing: border-box;
     cursor: pointer;
 }
@@ -784,6 +794,10 @@ h3.h3{
     }
     .radioGroup {
         justify-content: center;
+    }
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 }
 

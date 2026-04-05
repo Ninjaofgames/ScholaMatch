@@ -1,15 +1,18 @@
 import React from 'react';
+import '../pages/userXP.css';
 
 const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-top">
-          <div className="footer-brand">
-            <div className="brand-icon">
-              <i className="fas fa-graduation-cap"></i>
+          <div className="footer-brand" style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="brand-icon" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/logo.jpeg" alt="Logo" style={{ height: 'auto', width: 'auto', borderRadius: '8px' }} />
             </div>
-            <span className="brand-text">schola<strong>match</strong></span>
+            <span className="brand-text" style={{ fontSize: '1.6rem', fontWeight: '800', marginLeft: '8px' }}>
+              <span style={{ color: 'var(--green-500)' }}>schola</span><span style={{ color: '#56cbf9' }}>match</span>
+            </span>
           </div>
 
           <div className="footer-columns">

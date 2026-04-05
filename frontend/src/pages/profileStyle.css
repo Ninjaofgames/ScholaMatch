@@ -1,5 +1,7 @@
 .profileMain{
     margin-left: 68px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .avatarSection {
@@ -34,12 +36,13 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
+    justify-content: center;
 }
 
 .admin{
     font-weight: 500;
     font-size: 17.5px;
-    margin-top: -20px;
+    margin-top: 8px;
 }
 
 .manAdd{
@@ -56,15 +59,22 @@
 
 .pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"]{
     width: 500px;
-    padding: 12px;
-    border: 2px solid #4BB84B;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: rgba(232, 239, 246, 0.2);
+    background-color: rgba(0, 0, 0, 0.15);
     color: #E8EFF6;
     font-size: 16px;
     font-family: inherit;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     box-sizing: border-box;
+}
+
+.pinfo [type="text"]:focus, .pinfo input[type="number"]:focus, .manAdd input[type="password"]:focus{
+    outline: none;
+    border-color: #4BB84B;
+    box-shadow: 0 0 8px rgba(75, 184, 75, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 input:not([readonly]){
@@ -99,4 +109,49 @@ input[readonly]{
     opacity: 0;
     transform: translateY(-15px);
     pointer-events: none;
+}
+
+@media screen and (max-width: 1200px) {
+    .pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"] {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .profileMain {
+        margin-left: 0;
+        padding: 20px 15px;
+    }
+    .initInfo {
+        margin-left: 0;
+        margin-top: 15px;
+        align-items: center;
+        text-align: center;
+    }
+    .pinfo {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .pinfo > div {
+        width: 100%;
+    }
+    .pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"] {
+        width: 100%;
+        max-width: none;
+    }
+    .avatarSection {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .avatar {
+        width: 90px;
+        height: 90px;
+        font-size: 36px;
+    }
+    .admin {
+        font-size: 15px;
+    }
 }

@@ -6,6 +6,7 @@ import SchoolManagement from './pages/schoolmanage'
 import Profile from './pages/profile'
 import AuthPage from './pages/AuthPage'
 import FooterComp from './components/footer'
+import UserProfile from './pages/userProfile'
 import { VantaBg } from './components/Background'
 import { UserAuthProvider } from './context/UserAuthContext'
 import { AdminAuthProvider } from './context/AdminAuthContext'
@@ -19,7 +20,7 @@ import './userStyles.css'
 function AppLayout() {
   const location = useLocation();
   const isAuthPage = ['/login', '/register', '/verify', '/adminLgin'].includes(location.pathname);
-  const isUserPage = location.pathname === '/' || location.pathname.startsWith('/school/');
+  const isUserPage = location.pathname === '/' || location.pathname.startsWith('/school/') || location.pathname === '/user_profile';
   const hideLayout = isAuthPage || isUserPage;
 
   return (
@@ -34,6 +35,7 @@ function AppLayout() {
             <Route path='/login' element={<AuthPage />} />
             <Route path='/register' element={<AuthPage />} />
             <Route path="/verify" element={<AuthPage />} />
+            <Route path='/user_profile' element={<UserProfile />} />
             <Route path='/adminLgin' element={<AdminLogin />} />
             <Route path='/profile_user' element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
             <Route path='/admin/schoolM' element={<AdminRoute><SchoolManagement /></AdminRoute>}/>

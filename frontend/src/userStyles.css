@@ -161,6 +161,7 @@ img {
 
 .btn-login:hover {
     background: var(--green-600);
+    color: white;
     transform: translateY(-1px);
 }
 
@@ -174,7 +175,9 @@ img {
     color: var(--text);
     font-size: 1.05rem;
     cursor: pointer;
-    display: grid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     place-items: center;
     transition: background var(--transition);
 }
@@ -264,7 +267,12 @@ body.dark .search-input-wrapper {
     padding: 24px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.08);
     border: 1px solid var(--border);
-    z-index: 100;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
     animation: dropdownSlide 0.2s ease forwards;
 }
 
@@ -296,7 +304,7 @@ body.dark .filter-dropdown-card {
     gap: 6px;
     padding: 8px 16px;
     border-radius: 24px;
-    background: var(--slate-100);
+    background: var(--green-700);
     border: 1px solid transparent;
     font-size: .85rem;
     font-weight: 600;
@@ -461,7 +469,6 @@ body.dark .filter-dropdown-card {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: rgba(34, 197, 94, .9);
     color: var(--white);
     font-size: .65rem;
     font-weight: 700;
@@ -534,6 +541,8 @@ body.dark .filter-dropdown-card {
 
 .card-more-btn:hover {
     background: var(--green-600);
+    color: var(--white);
+    opacity: 0.75;
 }
 
 .empty-state {
@@ -807,7 +816,7 @@ body.dark .filter-toggle-btn:hover {
     padding: 10px 16px;
     border: 2px solid var(--green-500);
     border-radius: var(--radius-sm);
-    color: var(--green-600);
+    color: var(--white);
     font-size: .85rem;
     font-weight: 600;
     transition: all var(--transition);
@@ -815,7 +824,8 @@ body.dark .filter-toggle-btn:hover {
 
 .btn-action:hover {
     background: var(--green-500);
-    color: var(--white);
+    color: rgba(0, 0, 0, 0.5);
+    opacity: 0.75;
 }
 
 .detail-header h1 {
@@ -1489,20 +1499,27 @@ body.dark .stats-table th {
 .programs-block,
 .stats-block,
 .sentiment-block,
-.comments-block {
+.comments-block,
+.profile-card,
+.profile-section {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
 }
 
 .info-card:hover,
 .contact-card:hover,
 .programs-block:hover,
 .sentiment-block:hover,
-.comments-block:hover {
+.comments-block:hover,
+.profile-card:hover,
+.profile-section:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 0 16px rgba(34, 197, 94, 0.1);
 }
@@ -1529,7 +1546,9 @@ body.dark .ai-recommendation-card,
 body.dark .programs-block,
 body.dark .stats-block,
 body.dark .sentiment-block,
-body.dark .comments-block {
+body.dark .comments-block,
+body.dark .profile-card,
+body.dark .profile-section {
     background: rgba(30, 41, 59, 0.55);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -1544,7 +1563,9 @@ body.dark .info-card:hover,
 body.dark .contact-card:hover,
 body.dark .programs-block:hover,
 body.dark .sentiment-block:hover,
-body.dark .comments-block:hover {
+body.dark .comments-block:hover,
+body.dark .profile-card:hover,
+body.dark .profile-section:hover {
     transform: translateY(-2px);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 0 0 20px rgba(34, 197, 94, 0.05);
 }
@@ -1609,6 +1630,56 @@ body.dark h1, body.dark h2, body.dark h3 {
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
+/* User Profile Additions */
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.profile-field {
+    flex: 1 1 calc(50% - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-field label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.profile-field input {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+body.dark .profile-field input {
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-field input:focus {
+    outline: none;
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
 @media (max-width: 860px) {
     .detail-top {
         grid-template-columns: 1fr;
@@ -1643,5 +1714,94 @@ body.dark h1, body.dark h2, body.dark h3 {
 
     .detail-section-full .ai-recommendation ul {
         columns: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-inner {
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .brand-logo-container img {
+        height: 36px !important;
+    }
+    .brand-text {
+        font-size: 1.3rem !important;
+    }
+    .hero {
+        min-height: 250px;
+    }
+    .hero-overlay h1 {
+        font-size: 2rem;
+        padding: 0 16px;
+    }
+    .search-input-wrapper {
+        flex-direction: row;
+        width: 100%;
+        max-width: 100%;
+    }
+    .filter-chips-inline {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .search-bar-form {
+        width: 90%;
+        padding: 12px;
+    }
+    .school-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 16px;
+    }
+    .sentiment-circle {
+        width: 100px;
+        height: 100px;
+    }
+    .sentiment-value {
+        font-size: 1.1rem;
+    }
+    .sentiment-label {
+        font-size: 0.65rem;
+    }
+    .aspect-arc {
+        width: 60px;
+        height: 60px;
+    }
+    .a-value {
+        font-size: 0.65rem;
+    }
+    .a-label {
+        font-size: 0.65rem;
+    }
+    .comment-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .comment-form {
+        grid-template-columns: 1fr;
+    }
+    .comment-actions {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-overlay h1 {
+        font-size: 1.5rem;
+    }
+    .btn-login {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    .stats-table th, .stats-table td {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+    .navbar-actions {
+        width: 100%;
+        justify-content: space-between;
     }
 }

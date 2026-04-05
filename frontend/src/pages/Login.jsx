@@ -12,7 +12,7 @@ const Login = () => {
   
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -52,7 +52,7 @@ const Login = () => {
     setServerError('');
     try {
       await login(formData.email, formData.password);
-      navigate('/dashboard')
+      navigate('/');
     } catch (err) {
       const errData = err.response?.data;
       setServerError(errData?.detail || errData?.message || 'Invalid email or password');

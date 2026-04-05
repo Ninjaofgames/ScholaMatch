@@ -55,7 +55,9 @@ const Home = () => {
     setActiveFilters([]);
     setQuery('');
   };
-
+  useEffect(() => {
+    document.title = "ScholaMatch"
+  }, []);
   return (
     <>
       <Navbar activeLink="schools" />
@@ -173,7 +175,16 @@ const Home = () => {
       <main className="schools-section">
         {schools && schools.length > 0 ? (
           <div className="school-grid">
-            {schools.map(school => (
+            {schools.map(school => {
+                  const getBadgeColor = (level) => {
+                    const l = level?.toLowerCase() || '';
+                    if (l.includes('primary')) return '#e74c3c'; // red
+                    if (l.includes('secondary')) return '#e67e22'; // orange
+                    if (l.includes('high')) return '#2980b9'; // dark blue
+                    if (l.includes('college') || l.includes('univ') || l.includes('sup')) return '#1e8449'; // darker green
+                    return '#4BB84B'; // default
+                  };
+                  return (
               <article key={school.id} className="school-card" id={`school-card-${school.id}`}>
                 <div className="card-image">
                   {school.image ? (
@@ -183,7 +194,9 @@ const Home = () => {
                       <i className="fas fa-school"></i>
                     </div>
                   )}
-                  <span className="card-badge">scholamatch</span>
+                  <span className="card-badge" style={{ backgroundColor: getBadgeColor(school.education_level) }}>
+                     {school.education_level || 'scholamatch'}
+                  </span>
                 </div>
                 <div className="card-body">
                   <h2 className="card-title">{school.name}</h2>
@@ -200,7 +213,7 @@ const Home = () => {
                 </div>
                 <Link to={`/school/${school.id}`} className="card-more-btn">MORE</Link>
               </article>
-            ))}
+            )})}
           </div>
         ) : (
           <div className="empty-state">

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../pages/userXP.css';
+import { useUserAuth } from '../context/UserAuthContext';
 
 const Navbar = ({ activeLink }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { user, isAuthenticated } = useUserAuth();
 
   useEffect(() => {
     const darkModePref = localStorage.getItem('darkMode') === 'true';
@@ -38,9 +40,15 @@ const Navbar = ({ activeLink }) => {
         </div>
 
         <div className="navbar-actions">
-          <Link to="/login" className="btn-login">
-            <i className="fas fa-user"></i> Login
-          </Link>
+          {isAuthenticated && user ? (
+            <Link to="/user_profile" className="btn-login" style={{ background: 'var(--green-600)', borderColor: 'var(--green-500)', color: 'white' }}>
+              <i className="fas fa-user-circle"></i> {user?.username}
+            </Link>
+          ) : (
+            <Link to="/login" className="btn-login">
+              <i className="fas fa-user"></i> Login
+            </Link>
+          )}
           <button 
             className="icon-btn" 
             id="dark-mode-toggle" 

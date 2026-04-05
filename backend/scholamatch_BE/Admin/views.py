@@ -190,7 +190,18 @@ class LoginView(APIView):
             return Response({ 'detail': 'Invalid credentials' }, status=400)
         if not user.is_verified:
             return Response({ 'detail': 'Email not verified' }, status=403)
-        return Response({ 'success': True, 'token': f'user-{user.id_user}', 'user': { 'email': user.email } })
+        return Response({ 
+            'success': True,
+            'token': f'user-{user.id_user}',
+            'user': {
+                'email': user.email,
+                'first_name': user.prenom,
+                'last_name': user.nom,
+                'username': user.prenom + " " + user.nom,
+                'created_at': user.created_at,
+                'role': user.role,
+            }
+        })
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -407,8 +418,18 @@ def keywords_stats(request):
 @authentication_classes([])
 def change_password(request):
     token = request.headers.get('Authorization', '').replace('Token ', '')
-    user_id = token.replace('admin-', '')
-    user = User.objects.get(id_user=user_id)
+    if token.startswith('admin-'):
+        user_id = token.replace('admin-', '')
+    elif token.startswith('user-'):
+        user_id = token.replace('user-', '')
+    else:
+        return Response({'detail': 'Invalid token'}, status=400)
+        
+    try:
+        user = User.objects.get(id_user=user_id)
+    except User.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+        
     if not check_password(request.data['current_password'], user.password):
         return Response({ 'detail': 'The password given is incorrect!'}, status=400)
     user.password = make_password(request.data['new_password'])
@@ -420,8 +441,18 @@ def change_password(request):
 @authentication_classes([])
 def update_profile(request):
     token = request.headers.get('Authorization', '').replace('Token ', '')
-    user_id = token.replace('admin-', '')
-    user = User.objects.get(id_user=user_id)
+    if token.startswith('admin-'):
+        user_id = token.replace('admin-', '')
+    elif token.startswith('user-'):
+        user_id = token.replace('user-', '')
+    else:
+        return Response({'detail': 'Invalid token'}, status=400)
+        
+    try:
+        user = User.objects.get(id_user=user_id)
+    except User.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=404)
+        
     user.prenom = request.data.get('prenom', user.prenom)
     user.nom = request.data.get('nom', user.nom)
     user.email = request.data.get('email', user.email)
@@ -628,4 +659,4 @@ def school_comments(request, pk):
             'text': comment.comment_content,
             'sentiment': display_sentiment,
             'date': comment.comment_date.isoformat() if comment.comment_date else None,
-        }, status=201)
+        }, status=201)
