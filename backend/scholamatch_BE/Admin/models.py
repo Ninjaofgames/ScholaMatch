@@ -15,6 +15,7 @@ class Analysis(models.Model):
 class Aspect(models.Model):
     id_aspect = models.AutoField(primary_key=True)
     aspect_name = models.CharField(max_length=150)
+    category = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         managed = False

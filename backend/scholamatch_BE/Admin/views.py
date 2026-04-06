@@ -6,21 +6,22 @@ from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from .email_renderer import send_html_email
 from django.contrib.auth.hashers import make_password, check_password
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.db import connection
 import random
 from .models import Comment, User, School, Aspect, Analysis, SchoolComment, MotCle, SchoolSpeciality, Speciality
 from .serializers import CommentSerializer
 import csv
 import io
 import secrets
+from .llm_service import extract_aspects_with_polarity, classify_sentiment, classify_aspect_category
 
 @api_view(['GET'])
 def test_connection(request):
     return Response({"message": "Connection successful!"})
 
 @api_view(['POST'])
-@permission_classes([])
-@authentication_classes([])
+@permission_classes([IsAuthenticated])
 def upload_comments_csv(request):
     file = request.FILES.get('file')
     if not file:
@@ -68,7 +69,11 @@ def upload_comments_csv(request):
             if school_name:
                 school = School.objects.filter(school_name__iexact=school_name).first()
                 if school:
-                    SchoolComment.objects.create(id_ecole=school.id_school, id_comment=comment)
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            "INSERT INTO school_comment (id_ecole, id_comment) VALUES (%s, %s)",
+                            [school.id_school, comment.id_comment]
+                        )
             for a in aspects:
                 aspect, _ = Aspect.objects.get_or_create(aspect_name=a['aspect'])
                 Analysis.objects.create(id_comment=comment, id_aspect=aspect, polarity=a['polarity'])
@@ -82,7 +87,7 @@ def upload_comments_csv(request):
 @api_view(['POST'])
 def submit_comment(request):
     try:
-        serializer = CommentSerializer(data=request.data)
+        serializer = CommentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Comment saved!"}, status=201)
@@ -258,23 +263,110 @@ class AdminDashboardView(APIView):
 @api_view(['GET'])
 def search_schools(request):
     query = request.GET.get('q', '')
-    schools = School.objects.filter(school_name__icontains=query)[:10]
-    data = [{
-        'id': s.id_school,
-        'name': s.school_name,
-        'location': s.place or '',
-        'location_link': s.maps_link or '',
-        'mail': s.email or '',
-        'phone': s.phone_number or '',
-        'funding_type': s.financial_type or '',
-        'education_level': s.education_type or '',
-        'teaching_language': s.teaching_language or '',
-        'university_name': s.university_name or '',
-        'website_link': s.website_link or '',
-        'description': s.description or '',
-        'image': s.image or '',
-    } for s in schools]
-    return Response(data)
+    active_filters = request.GET.getlist('filter')
+    
+    # We fetch a larger pool for filtering
+    schools = School.objects.filter(school_name__icontains=query)[:50]
+    data = []
+    
+    for s in schools:
+        # Get comments linked to this school (raw SQL - table has no 'id' column)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id_comment FROM school_comment WHERE id_ecole = %s", [s.id_school])
+            comment_ids = [row[0] for row in cursor.fetchall()]
+        
+        # Calculate aspect scores using category logic
+        aspect_stats = {
+            'teachers': {'pos': 0, 'total': 0},
+            'facilities': {'pos': 0, 'total': 0},
+            'administration': {'pos': 0, 'total': 0},
+            'affordability': {'pos': 0, 'total': 0},
+        }
+        
+        analyses = Analysis.objects.filter(id_comment__in=comment_ids).select_related('id_aspect')
+        
+        global_pos = 0
+        global_total = 0
+        
+        for analysis in analyses:
+            asp = analysis.id_aspect
+            category = asp.category
+            
+            # Use same fallback logic as school_detail
+            if not category:
+                category = classify_aspect_category(asp.aspect_name)
+                asp.category = category
+                asp.save(update_fields=['category'])
+            
+            if category in aspect_stats:
+                aspect_stats[category]['total'] += 1
+                if analysis.polarity == 'positive':
+                    aspect_stats[category]['pos'] += 1
+            
+            if analysis.polarity in ['positive', 'negative']:
+                global_total += 1
+                if analysis.polarity == 'positive':
+                    global_pos += 1
+        
+        # Compute final percentages
+        scores = {
+            k: (round((v['pos'] / v['total']) * 100, 1) if v['total'] > 0 else 0)
+            for k, v in aspect_stats.items()
+        }
+        sentiment_score = round((global_pos / global_total) * 100, 1) if global_total > 0 else 0
+        
+        # ---- Filtering Logic ----
+        is_matched = True
+        for f in active_filters:
+            if f in scores:
+                # Require at least 50% positivity for a filter to match
+                if scores[f] < 50:
+                    is_matched = False
+                    break
+            elif f == 'recommended':
+                 if sentiment_score < 70:
+                      is_matched = False
+                      break
+
+        if not is_matched:
+            continue
+
+        # Assign classification grade
+        if sentiment_score >= 80:
+            classification = 'Exceptional'
+        elif sentiment_score >= 60:
+            classification = 'Highly Rated'
+        elif sentiment_score >= 40:
+            classification = 'Good'
+        elif global_total == 0:
+            classification = 'No Reviews Yet'
+        else:
+            classification = 'Improving'
+
+        data.append({
+            'id': s.id_school,
+            'name': s.school_name,
+            'location': s.place or '',
+            'location_link': s.maps_link or '',
+            'mail': s.email or '',
+            'phone': s.phone_number or '',
+            'funding_type': s.financial_type or '',
+            'education_level': s.education_type or '',
+            'teaching_language': s.teaching_language or '',
+            'university_name': s.university_name or '',
+            'website_link': s.website_link or '',
+            'description': s.description or '',
+            'image': s.image or '',
+            'sentiment_score': sentiment_score,
+            'classification': classification,
+            'aspect_scores': scores,
+            'review_count': len(comment_ids)
+        })
+    
+    # Sort schools by sentiment score (highest first)
+    data.sort(key=lambda x: x['sentiment_score'], reverse=True)
+    # Return top 10 relevant balanced result
+    return Response(data[:10])
 
 @api_view(['POST'])
 @permission_classes([])
@@ -385,7 +477,6 @@ def aspects_stats(request):
 
 @api_view(['GET'])
 def comments_week(request):
-    from django.db import connection
     from datetime import datetime, timedelta
     from django.utils import timezone
     
@@ -484,17 +575,20 @@ def school_detail(request, pk):
         return Response({'error': 'School not found'}, status=404)
 
     # Get all comments linked to this school (raw SQL - table has no 'id' column)
-    from django.db import connection
     with connection.cursor() as cursor:
         cursor.execute("SELECT id_comment FROM school_comment WHERE id_ecole = %s", [school.id_school])
         comment_ids = [row[0] for row in cursor.fetchall()]
     comments = Comment.objects.filter(id_comment__in=comment_ids)
-
-    # Compute sentiment score (% positive)
     total_comments = comments.count()
-    if total_comments > 0:
-        positive_count = comments.filter(sentiment_label='positive').count()
-        sentiment_score = round((positive_count / total_comments) * 100, 1)
+
+    # Get all analysis records for these comments to compute overall sentiment score from aspects
+    all_analyses = Analysis.objects.filter(id_comment__in=comment_ids)
+    
+    total_aspects = all_analyses.filter(polarity__in=['positive', 'negative']).count()
+    if total_aspects > 0:
+        positive_aspects = all_analyses.filter(polarity='positive').count()
+        # Sentiment score is % of positive aspects
+        sentiment_score = round((positive_aspects / total_aspects) * 100, 1)
     else:
         sentiment_score = 0
 
@@ -504,29 +598,33 @@ def school_detail(request, pk):
 
     # Compute aspect positivity
     aspect_positivity = {
-        'teachers': 0,
-        'facilities': 0,
-        'administration': 0,
-        'affordability': 0,
-    }
-    aspect_mapping = {
-        'teachers': ['teacher', 'teachers', 'professor', 'professors', 'instructor', 'instructors', 'enseignant', 'enseignants', 'prof'],
-        'facilities': ['facility', 'facilities', 'building', 'buildings', 'campus', 'infrastructure', 'lab', 'library'],
-        'administration': ['administration', 'admin', 'management', 'staff', 'organization', 'bureaucracy'],
-        'affordability': ['affordability', 'price', 'cost', 'tuition', 'fee', 'fees', 'affordable', 'expensive', 'cheap'],
+        'teachers': {'pos': 0, 'total': 0},
+        'facilities': {'pos': 0, 'total': 0},
+        'administration': {'pos': 0, 'total': 0},
+        'affordability': {'pos': 0, 'total': 0},
     }
 
-    for category, keywords in aspect_mapping.items():
-        aspects = Aspect.objects.filter(aspect_name__in=keywords)
-        if aspects.exists():
-            analyses = Analysis.objects.filter(
-                id_comment__in=comment_ids,
-                id_aspect__in=aspects
-            )
-            total = analyses.count()
-            if total > 0:
-                pos = analyses.filter(polarity='positive').count()
-                aspect_positivity[category] = round((pos / total) * 100, 1)
+    analyses = Analysis.objects.filter(
+        id_comment__in=comment_ids
+    ).select_related('id_aspect')
+
+    for analysis in analyses:
+        asp = analysis.id_aspect
+        
+        if not asp.category:
+            asp.category = classify_aspect_category(asp.aspect_name)
+            asp.save(update_fields=['category'])
+        
+        category = asp.category
+        if category in aspect_positivity:
+            aspect_positivity[category]['total'] += 1
+            if analysis.polarity == 'positive':
+                aspect_positivity[category]['pos'] += 1
+
+    aspect_positivity = {
+        k: round((v['pos'] / v['total']) * 100, 1) if v['total'] > 0 else 0
+        for k, v in aspect_positivity.items()
+    }
 
     # Get keywords from mot_cle table
     keywords_qs = MotCle.objects.filter(id_school=school.id_school)
@@ -573,8 +671,7 @@ def school_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([])
-@authentication_classes([])
+@permission_classes([AllowAny])
 def school_comments(request, pk):
     try:
         school = School.objects.get(id_school=pk)
@@ -582,7 +679,6 @@ def school_comments(request, pk):
         return Response({'error': 'School not found'}, status=404)
 
     if request.method == 'GET':
-        from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("SELECT id_comment FROM school_comment WHERE id_ecole = %s", [school.id_school])
             comment_ids = [row[0] for row in cursor.fetchall()]
@@ -606,32 +702,33 @@ def school_comments(request, pk):
             })
         return Response(results)
 
-    elif request.method == 'POST':
-        username = request.data.get('username', 'Anonymous')
+    if request.method == 'POST':
         text = request.data.get('text', '')
-
+        username = request.data.get('username', 'Anonymous')
+        
         if not text:
             return Response({'error': 'Comment text is required'}, status=400)
 
-        positive_words = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'best', 'love', 'helpful',
-                          'fantastic', 'awesome', 'nice', 'perfect', 'recommend', 'top', 'bien', 'super',
-                          'genial', 'magnifique', 'parfait', 'excellente', 'formidable']
-        negative_words = ['bad', 'terrible', 'worst', 'horrible', 'poor', 'hate', 'awful', 'disappointing',
-                          'useless', 'waste', 'mauvais', 'nul', 'pire', 'decevant']
-
-        text_lower = text.lower()
-        pos_count = sum(1 for w in positive_words if w in text_lower)
-        neg_count = sum(1 for w in negative_words if w in text_lower)
-
+        # Use LLM to extract aspects and polarities
+        extracted_aspects = extract_aspects_with_polarity(text)
+        
+        pos_count = sum(1 for a in extracted_aspects if a['polarity'] == 'positive')
+        neg_count = sum(1 for a in extracted_aspects if a['polarity'] == 'negative')
+        total_aspects = len(extracted_aspects)
+        
+        # Formula confirmed by USER: (positive - negative) / total
+        if total_aspects > 0:
+            sentiment_score = round((pos_count - neg_count) / total_aspects, 2)
+        else:
+            sentiment_score = 0.0
+            
+        # Manually derive label (LLM should not classify overall score)
         if pos_count > neg_count:
             sentiment_label = 'positive'
-            sentiment_score = 0.5
         elif neg_count > pos_count:
             sentiment_label = 'negative'
-            sentiment_score = -0.5
         else:
             sentiment_label = 'neutral'
-            sentiment_score = 0.0
 
         comment = Comment.objects.create(
             comment_content=text,
@@ -639,6 +736,15 @@ def school_comments(request, pk):
             sentiment_score=sentiment_score,
             sentiment_label=sentiment_label,
         )
+
+        # Save Analysis and Aspect records
+        for a in extracted_aspects:
+            aspect, _ = Aspect.objects.get_or_create(aspect_name=a['aspect'])
+            Analysis.objects.create(
+                id_comment=comment,
+                id_aspect=aspect,
+                polarity=a['polarity']
+            )
 
         with connection.cursor() as cursor:
             cursor.execute(

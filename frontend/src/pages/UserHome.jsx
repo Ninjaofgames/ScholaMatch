@@ -89,52 +89,52 @@ const Home = () => {
             {filterPanelOpen && (
               <div className="filter-dropdown-card">
                 <div className="filter-chips-inline">
-                  <label className={`filter-chip ${activeFilters.includes('good teachers') ? 'active' : ''}`}>
+                  <label className={`filter-chip ${activeFilters.includes('teachers') ? 'active' : ''}`}>
                     <input 
                       type="checkbox" 
                       name="filter" 
-                      value="good teachers" 
+                      value="teachers" 
                       style={{ display: 'none' }}
                       onChange={handleFilterChange}
-                      checked={activeFilters.includes('good teachers')}
+                      checked={activeFilters.includes('teachers')}
                     />
-                    <i className="fas fa-chalkboard-teacher"></i> Good Teachers
+                    <i className="fas fa-chalkboard-teacher"></i> Teachers
                   </label>
                   
-                  <label className={`filter-chip ${activeFilters.includes('affordable') ? 'active' : ''}`}>
+                  <label className={`filter-chip ${activeFilters.includes('affordability') ? 'active' : ''}`}>
                     <input 
                       type="checkbox" 
                       name="filter" 
-                      value="affordable" 
+                      value="affordability" 
                       style={{ display: 'none' }}
                       onChange={handleFilterChange}
-                      checked={activeFilters.includes('affordable')}
+                      checked={activeFilters.includes('affordability')}
                     />
-                    <i className="fas fa-dollar-sign"></i> Affordable
+                    <i className="fas fa-dollar-sign"></i> Affordability
                   </label>
                   
-                  <label className={`filter-chip ${activeFilters.includes('good facilities') ? 'active' : ''}`}>
+                  <label className={`filter-chip ${activeFilters.includes('facilities') ? 'active' : ''}`}>
                     <input 
                       type="checkbox" 
                       name="filter" 
-                      value="good facilities" 
+                      value="facilities" 
                       style={{ display: 'none' }}
                       onChange={handleFilterChange}
-                      checked={activeFilters.includes('good facilities')}
+                      checked={activeFilters.includes('facilities')}
                     />
-                    <i className="fas fa-building"></i> Good Facilities
+                    <i className="fas fa-building"></i> Facilities
                   </label>
                   
-                  <label className={`filter-chip ${activeFilters.includes('recommended') ? 'active' : ''}`}>
+                  <label className={`filter-chip ${activeFilters.includes('administration') ? 'active' : ''}`}>
                     <input 
                       type="checkbox" 
                       name="filter" 
-                      value="recommended" 
+                      value="administration" 
                       style={{ display: 'none' }}
                       onChange={handleFilterChange}
-                      checked={activeFilters.includes('recommended')}
+                      checked={activeFilters.includes('administration')}
                     />
-                    <i className="fas fa-thumbs-up"></i> Recommended
+                    <i className="fas fa-user-tie"></i> Administration
                   </label>
                   
                   {(activeFilters.length > 0 || query) && (
@@ -226,7 +226,7 @@ const Home = () => {
             ) : (
               <>
                 <h2>No schools yet</h2>
-                <p>Schools added through the <Link to="/admin">admin panel</Link> will appear here.</p>
+                <p>Schools added through the <Link to="/">admin panel</Link> will appear here.</p>
               </>
             )}
           </div>

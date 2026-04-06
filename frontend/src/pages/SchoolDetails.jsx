@@ -4,9 +4,12 @@ import { useParams, Link } from 'react-router-dom';
 import './userXP.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/footerII';
+import { useUserAuth } from '../context/UserAuthContext';
+import { getUserToken } from '../services/userAuthService';
 
 const SchoolDetail = () => {
   const { id } = useParams();
+  const { user, isAuthenticated } = useUserAuth();
   
   // State for dynamic data
   const [messages, setMessages] = useState([]);
@@ -58,7 +61,11 @@ const SchoolDetail = () => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!commentUsername || !commentText) return;
+    const finalUsername = isAuthenticated ? (user?.username || "Anonymous") : commentUsername;
+    if (!finalUsername || !commentText) return;
+    
+    // Get token for authentication header
+    const token = getUserToken();
     
     try {
       console.log("Attempting to post comment to:", `/api/schools/${id}/comments/`);
@@ -66,9 +73,10 @@ const SchoolDetail = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Token ${token}` } : {})
         },
         body: JSON.stringify({
-          username: commentUsername,
+          username: isAuthenticated ? (user?.username) : commentUsername,
           text: commentText
         })
       });
@@ -328,14 +336,16 @@ const SchoolDetail = () => {
           <div className="comments-block">
             <h3><i className="fas fa-comments"></i> Comments</h3>
             <form onSubmit={handleCommentSubmit} className="comment-form">
-              <input 
-                type="text" 
-                name="username" 
-                placeholder="Your name" 
-                className="comment-name-input"
-                value={commentUsername}
-                onChange={(e) => setCommentUsername(e.target.value)}
-              />
+              {!isAuthenticated && (
+                <input 
+                  type="text" 
+                  name="username" 
+                  placeholder="Your name" 
+                  className="comment-name-input"
+                  value={commentUsername}
+                  onChange={(e) => setCommentUsername(e.target.value)}
+                />
+              )}
               <div className="comment-input-row">
                 <input 
                   type="text" 

@@ -41,7 +41,7 @@ const emptyForm = {
     name: "", website_link: "", location: "", location_link: "",
     mail: "", phone: "", funding_type: "", education_level: "",
     teaching_language: "", teaching_language_other: "",
-    university_name: "", keywords: "", image_link: "",
+    university_name: "", keywords: "", image_link: "", description: "",
 };
 
 export default function SchoolManagement(){
@@ -102,6 +102,7 @@ export default function SchoolManagement(){
             university_name: school.university_name || "",
             keywords: "",
             image_link: school.image || "",
+            description: school.description || "",
         });
     };
 
@@ -209,7 +210,15 @@ export default function SchoolManagement(){
                                     <input type="text" value={addForm.phone} onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })} />
                                 </div>
                             </div>
-
+                            <div className="formGroup">
+                                <label>Description</label>
+                                <textarea
+                                    value={addForm.description}
+                                    onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
+                                    placeholder="Write a description about the school..."
+                                    rows={4}
+                                />
+                            </div>
                             <div className="formGroup">
                                 <label>Funding type</label>
                                 <div className="radioGroup">
@@ -230,7 +239,7 @@ export default function SchoolManagement(){
                                 <div className="formGroup">
                                     <label>Education level</label>
                                     <div className="radioGroup">
-                                        {["primary", "middle", "high", "college"].map((val) => (
+                                        {["primary", "secondary", "high school", "college"].map((val) => (
                                             <label key={val}>
                                                 <input
                                                     type="radio"
@@ -327,7 +336,15 @@ export default function SchoolManagement(){
                                         </React.Fragment>
                                     ))}
                                 </div>
-
+                                <div className="formGroup">
+                                    <label>Description</label>
+                                    <textarea
+                                        value={modifyForm.description}
+                                        onChange={(e) => setModifyForm({ ...modifyForm, description: e.target.value })}
+                                        placeholder="Write a description about the school..."
+                                        rows={4}
+                                    />
+                                </div>
                                 <div className="formGroup">
                                     <label>Funding type</label>
                                     <div className="radioGroup">
@@ -348,7 +365,7 @@ export default function SchoolManagement(){
                                 <div className="formGroup">
                                     <label>Education level</label>
                                     <div className="radioGroup">
-                                        {["primary", "middle", "high", "college"].map((val) => (
+                                        {["primary", "secondary", "high school", "college"].map((val) => (
                                             <label key={val}>
                                                 <input
                                                     type="radio"
