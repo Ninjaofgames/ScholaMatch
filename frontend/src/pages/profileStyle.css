@@ -1,0 +1,157 @@
+.profileMain{
+    margin-left: 68px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.avatarSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(75, 184, 75, 0.2);
+    border: 2px solid #4bb84b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: #4bb84b;
+}
+
+.avatarWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+}
+
+.initInfo{
+    margin-left: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.admin{
+    font-weight: 500;
+    font-size: 17.5px;
+    margin-top: 8px;
+}
+
+.manAdd{
+    margin-bottom: 30px;
+}
+
+.pinfo{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5%;
+}
+
+.pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"]{
+    width: 500px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #E8EFF6;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.pinfo [type="text"]:focus, .pinfo input[type="number"]:focus, .manAdd input[type="password"]:focus{
+    outline: none;
+    border-color: #4BB84B;
+    box-shadow: 0 0 8px rgba(75, 184, 75, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+input:not([readonly]){
+    cursor: text;
+}
+
+input[readonly]{
+    cursor: not-allowed;
+}
+
+.pinfo label, label{
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #E8EFF6;
+}
+
+.passwordForm{
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+.passwordForm.open {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.passwordForm.closed {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-15px);
+    pointer-events: none;
+}
+
+@media screen and (max-width: 1200px) {
+    .pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"] {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .profileMain {
+        margin-left: 0;
+        padding: 20px 15px;
+    }
+    .initInfo {
+        margin-left: 0;
+        margin-top: 15px;
+        align-items: center;
+        text-align: center;
+    }
+    .pinfo {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .pinfo > div {
+        width: 100%;
+    }
+    .pinfo [type="text"], .pinfo input[type="number"], .manAdd input[type="password"] {
+        width: 100%;
+        max-width: none;
+    }
+    .avatarSection {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .avatar {
+        width: 90px;
+        height: 90px;
+        font-size: 36px;
+    }
+    .admin {
+        font-size: 15px;
+    }
+}
