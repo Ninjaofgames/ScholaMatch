@@ -148,12 +148,12 @@ REST_FRAMEWORK = {
 #For SMTP sending
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'testbadr35@gmail.com'
-EMAIL_HOST_PASSWORD = 'oepu zhdx ugus cnuk'
-DEFAULT_FROM_EMAIL = 'testbadr35@gmail.com'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 465
+#EMAIL_USE_SSL = True
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = ''
 # For production phase
 #STATICFILES_DIRS = [BASE_DIR / "../../frontend/dist"]
 #TEMPLATES[0]["DIRS"] = [BASE_DIR / "../../frontend/dist"]
